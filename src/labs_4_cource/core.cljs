@@ -4,6 +4,8 @@
 
 (def window-width (reagent/atom nil))
 
+(defonce points (->> 100 range (map (fn [x] [x x])) doall atom))
+
 (defn on-window-resize [evt]
   (reset! window-width (.-innerWidth js/window)))
 
@@ -11,25 +13,18 @@
   (println value)
   value)
 
-(defn draw-pixel [node [x y]]
-  (let [ctx (-> node
-                .-children
-                (aget 0)
-                (.getContext "2d"))
-        ]
+(defn draw-pixel [ctx [x y]]
       (-> ctx
-          (.fillRect x y 1 1))))
+          (.fillRect x y 1 1)))
+
+(defn draw-pixels [ctx col]
+    (doall (map (fn [p] (draw-pixel ctx p)) col)))
 
 (defn draw-canvas-contents [canvas]
   (let [ctx (.getContext canvas "2d")
         w (.-clientWidth canvas)
         h (.-clientHeight canvas)]
-    (.beginPath ctx)
-    (.moveTo ctx 0 0)
-    (.lineTo ctx w h)
-    (.moveTo ctx w 0)
-    (.lineTo ctx 0 h)
-    (.stroke ctx)))
+    (draw-pixels ctx @points)))
 
 (defonce dom-node (reagent/atom nil))
 
@@ -61,3 +56,5 @@
   (reagent/render [home]
                   (.getElementById js/document "app"))
   (.addEventListener js/window "resize" on-window-resize))
+
+(init! )
