@@ -36,7 +36,7 @@
                          :optimizations :none
                          :pretty-print  true}
                         :figwheel
-                        {:on-jsload "labs-4-cource.core/mount-root"
+                        {:on-jsload "labs-4-cource.core/init!"
                          :open-urls ["http://localhost:3449/index.html"]}}
                        :release
                        {:source-paths ["src" "env/prod/cljs"]
