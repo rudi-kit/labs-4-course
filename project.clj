@@ -34,7 +34,11 @@
                          :asset-path   "js/out"
                          :source-map true
                          :optimizations :none
-                         :pretty-print  true}
+                         :pretty-print  true
+                         :foreign-libs [{
+                                         :file "public/libs/events.js"
+                                         :provides ["canvas.events"]
+                                         :module-type :commonjs}]}
                         :figwheel
                         {:on-jsload "labs-4-cource.core/init!"
                          :open-urls ["http://localhost:3449/index.html"]}}
