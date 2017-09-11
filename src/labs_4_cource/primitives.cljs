@@ -25,8 +25,17 @@
     Line
     (line-points [this]
         (let [[x1 y1] p1
-              [x2 y2] p2]
-            false)))
+              [x2 y2] p2
+              dx (- x2 x1)
+              dy (- y2 y1)
+              e (- (* 2 dy) dx)]
+            (->>  [x1 y1 e]
+                  (iterate (fn [[x y e]]
+                               (if (>= e 0) [(+ 1 x) (+ 1 y) (+ e (* 2 dy) (- (* 2 dx)))]
+                                   [(+ 1 x) y (+ e (* 2 dy))])))
+                  (take dx)
+                  (map (fn [[x y]] [x y]))
+                 ))))
 
 (deftest line-from-book
     (are [src expected] (= src expected)
