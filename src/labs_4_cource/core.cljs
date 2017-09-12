@@ -13,6 +13,7 @@
                  value]))])
 
 (defonce selected (reagent/atom :simple))
+
 (defn change-selected [value] (reset! selected value))
 (defn home []
   [:div

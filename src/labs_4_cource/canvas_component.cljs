@@ -4,7 +4,10 @@
              can
              :refer
              [DoubleCanvas draw-pixels enable-smoothing event-pos->vector scale->]]
-            [labs-4-cource.primitives :refer [->SimpleLine floor line-points]]
+            [labs-4-cource.core :refer [selected]]
+            [labs-4-cource.primitives
+             :refer
+             [->BrezenhameLine ->SimpleLine ->SmoothLine line-points]]
             [reagent.core :as reagent]))
 
 (def drawer (reagent/atom nil))
@@ -13,6 +16,8 @@
 (defonce smoothing (reagent/atom false))
 (defonce next-primitive (atom nil))
 (defonce events (reagent/atom nil))
+
+(def line-factories {:simple ->SimpleLine :be ->BrezenhameLine :smooth ->SmoothLine})
 
 (defn add-primitives [primitive]
     (swap! primitives (partial cons primitive)))
@@ -25,7 +30,7 @@
     (-> @events (.getMousePos event) event-pos->vector (scale-> @scale) add-pos)
     (when (= (count @next-primitive) 2)
         (let [[p1 p2] @next-primitive]
-            (add-primitives (apply ->SimpleLine @next-primitive))
+            (add-primitives (apply (@selected line-factories) @next-primitive))
             (reset! next-primitive nil))))
 
 (defn draw-canvas-contents [ctx]

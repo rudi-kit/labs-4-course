@@ -43,6 +43,13 @@
                   (map (fn [[x y]] [x y]))
                   ))))
 
+(deftype SmoothLine [p1 p1]
+    Line
+    (line-points [this]
+        (let [[x1 y1] p1
+              [x2 y2] p2]
+            [[0 0] [1 1] [2 2]])))
+
 (deftest line-from-book
     (are [src expected] (= src expected)
         (line-points (SimpleLine. [0 0] [2 2])) [[0 0] [1 1] [2 2]]
