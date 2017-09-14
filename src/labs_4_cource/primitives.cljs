@@ -14,9 +14,9 @@
           length (max (Math/abs (- x2 x1)) (Math/abs (- y2 y1)))
           dx (/ (- x2 x1) length)
           dy (/ (- y2 y1) length)]
-      (->> [x1 y1 0]
-           (iterate (fn [[x y i]] [(+ x dx) (+ y dy) (+ i 1)]))
-           (take-while (fn [[x y i]] (<= i length)))
+      (->> [x1 y1]
+           (iterate (fn [[x y]] [(+ x dx) (+ y dy)]))
+           (take length)
            (map (fn [[x y]] [(floor x) (floor y)]))))))
 
 (defn calc-steps [coordinate]
@@ -46,4 +46,7 @@
   (line-points [this]
     (let [[x1 y1] p1
           [x2 y2] p2]
-      [[0 0] [1 1] [2 2] [4 4] [5 5]])))
+        [[[0 0] [1 1] [2 2] [4 4] [5 5]] [[0 0 0 0] [0 0 0 1] [0.5 0 0 1] [0 0 0 1] [0 0 0 1]]])))
+
+(line-points (SmoothLine. [] []))
+(apply str (line-points (SmoothLine. [] [])))

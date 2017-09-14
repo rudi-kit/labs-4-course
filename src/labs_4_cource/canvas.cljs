@@ -22,25 +22,27 @@
   (set! (.-webkitImageSmoothingEnabled ctx) flag)
   (set! (.-msImageSmoothingEnabled ctx) flag))
 
+(defn rgba [[r g b a]] (str "rgba(" r "," g "," b "," a ")"))
 (deftype Canvas [canvas]
   DomCanvas
   (get-2d-ctx [this] (.getContext canvas "2d"))
   (get-dom-node [this] canvas)
   Drawer
-  (draw-pixel [this [x y] [r g b a]]
-    (set! (.-fillStyle (get-2d-ctx this)) (str "rgba(" r "," g "," b "," a ")"))
+  (draw-pixel [this [x y] color]
+    (set! (.-fillStyle (get-2d-ctx this)) (rgba color))
     (.fillRect (get-2d-ctx this) x y 1 1))
   (draw-pixels [this col color-col]
-      (doall (map (fn [p color] (draw-pixel this p color)) col color-col)))
+      (pr col color-col)
+    (doall (map (fn [p color] (draw-pixel this p color)) col color-col)))
   (draw-pixels [this col] (draw-pixels this col (iterate identity [0 0 0 1])))
   (clean [this] (-> (get-2d-ctx this) (.clearRect 0 0 640 320))))
 
 (comment (draw-pixels @drawer [[0 0] [1 1] [2 2]]))
 (deftype DoubleCanvas [canvas1 canvas2]
   Drawer
-  (draw-pixels [this col]
-    (draw-pixels canvas2 col)
+  (draw-pixels [this col color-col] (draw-pixels canvas2 col)
     (.drawImage (get-2d-ctx canvas1) (get-dom-node canvas2) 0 0 160 80 0 0 640 320))
+  (draw-pixels [this col] (draw-pixels this col (iterate identity [0 0 0 1])))
   (clean [this]
     (clean canvas1)
     (clean canvas2))

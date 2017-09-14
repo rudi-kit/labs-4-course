@@ -3,15 +3,16 @@
              :as
              can
              :refer
-             [Canvas
-              clean
-              DoubleCanvas
-              draw-pixels
-              enable-smoothing
-]]
+             [Canvas clean DoubleCanvas draw-pixels enable-smoothing]]
             [labs-4-cource.primitives
              :refer
-             [->BrezenhameLine ->SimpleLine ->SmoothLine line-points]]
+             [->BrezenhameLine
+              ->SimpleLine
+              ->SmoothLine
+              BrezenhameLine
+              line-points
+              SimpleLine
+              SmoothLine]]
             [labs-4-cource.storage
              :refer
              [drawer events next-primitive primitives scale selected]]
@@ -41,12 +42,17 @@
 
 (defn all-pixels-col [] (->> @primitives (map line-points) (apply concat)))
 
+(defmulti draw-line (fn [ctx line] (type line)))
+(defmethod draw-line SimpleLine [ctx line]  (draw-pixels ctx (line-points line)) )
+(defmethod draw-line BrezenhameLine [ctx line]  (draw-pixels ctx (line-points line)) )
+(defmethod draw-line SmoothLine [ctx line]  (apply draw-pixels ctx (line-points line)))
+
 (defn draw-canvas-contents [ctx]
-  (draw-pixels ctx (all-pixels-col)))
+  (doall (map (partial draw-line ctx) @primitives)))
 
 (defn clean-canvas []
-    "clean current canvas component"
-    (clean @drawer))
+  "clean current canvas component"
+  (clean @drawer))
 
 (defn div-with-canvas []
   (reagent/create-class
@@ -58,13 +64,11 @@
     (fn [this]
       (let [canvas1 (-> this
                         reagent/dom-node
-                        .-firstChild
-                        )
+                        .-firstChild)
             canvas2 (-> this
                         reagent/dom-node
                         .-children
-                        (aget 1)
-                        )]
+                        (aget 1))]
         (reset! events (can/canvas-events canvas1))
         (reset! drawer (DoubleCanvas. (Canvas. canvas1) (Canvas. canvas2)))
         (enable-smoothing @drawer false)))
@@ -84,3 +88,12 @@
                  :onClick on-click
                  :height 320
                  :style {:border "solid 1px"}}]])}))
+
+
+(comment
+    (draw-pixels @drawer [[0 0]] [[0 255 0 1]])
+
+ (draw-pixels @drawer [[0 1]] [[0 125 0 0.1]])
+ (draw-pixels @drawer [[1 0]] [[0 255 125 1]])
+ (draw-pixels @drawer [[1 1]] [[125 255 0 1]])
+    )
