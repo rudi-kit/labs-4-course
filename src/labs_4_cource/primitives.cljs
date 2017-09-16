@@ -26,25 +26,31 @@
   (if (>= e 0) [(+ x-step x) (+ y-step y) (+ e (* 2 dy) (- (* 2 dx)))]
       [(+ x-step x) y (+ e (* 2 dy))]))
 
+(defn brezenhame-line [p1 p2]
+  (let [[x1 y1] p1
+        [x2 y2] p2
+        dx  (Math/abs (- x2 x1))
+        dy  (Math/abs (- y2 y1))
+        e (- (* 2 dy) dx)
+        [x-step y-step] (calc-steps [(- x2 x1) (- y2 y1)])]
+    (->>  [x1 y1 e]
+          (iterate (partial next-brezenhame-point dx dy x-step y-step))
+          (take (+ 1  dx))
+          (map (fn [[x y e]] [(floor x) (floor y) e]))
+          )))
+
 (deftype BrezenhameLine [p1 p2]
   Line
   (line-points [this]
-    (let [[x1 y1] p1
-          [x2 y2] p2
-          dx  (Math/abs (- x2 x1))
-          dy  (Math/abs (- y2 y1))
-          e (- (* 2 dy) dx)
-          [x-step y-step] (calc-steps [(- x2 x1) (- y2 y1)])]
-      (->>  [x1 y1 e]
-            (iterate (partial next-brezenhame-point dx dy x-step y-step))
-            (take (+ 1  dx))
-            (map (fn [[x y]] [x y]))
-            (map (fn [[x y]] [(floor x) (floor y)]))))))
+      (map (fn [[x y]] [x y]) (brezenhame-line p1 p2))))
 
 (deftype SmoothLine [p1 p2]
   Line
   (line-points [this]
     (let [[x1 y1] p1
-          [x2 y2] p2]
-        (if (or (= x1 x2) (= y1 y2)) [(line-points (SimpleLine. p1 p2)) (iterate identity [0 0 0 1])]))))
-
+          [x2 y2] p2
+          length (max (Math/abs (- x2 x1)) (Math/abs (- y2 y1)))]
+        (->> (brezenhame-line p1 p2)
+             (map (fn [[x y e]] [[x y (/ e length)] [x (+ y 1) (- 1 (/ e length))]]))
+             (mapcat identity)
+             ))))

@@ -17,9 +17,10 @@
 
 (defn rgba [[r g b a]] (str "rgba(" r "," g "," b "," a ")"))
 
-(defn draw-pixel [canvas [x y] color]
+(defn draw-pixel [canvas [x y e] color]
   (let [ctx (get-ctx canvas)]
-    (set! (.-fillStyle ctx) (rgba color))
+      (pr x y e)
+    (set! (.-fillStyle ctx) (rgba [0 0 0 e]))
     (.fillRect ctx x y 1 1)))
 
 (defn draw-pixels

@@ -44,7 +44,7 @@
 (defmulti draw-line (fn [ctx line] (type line)))
 (defmethod draw-line SimpleLine [ctx line]  (draw-pixels ctx (line-points line)) )
 (defmethod draw-line BrezenhameLine [ctx line]  (draw-pixels ctx (line-points line)) )
-(defmethod draw-line SmoothLine [ctx line]  (apply draw-pixels ctx (line-points line)))
+(defmethod draw-line SmoothLine [ctx line]  (draw-pixels ctx (line-points line)))
 
 (defn draw-canvas-contents [ctx]
   (doall (map (partial draw-line ctx) @primitives)))
