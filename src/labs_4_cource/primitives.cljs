@@ -46,7 +46,5 @@
   (line-points [this]
     (let [[x1 y1] p1
           [x2 y2] p2]
-        [[[0 0] [1 1] [2 2] [4 4] [5 5]] [[0 0 0 0] [0 0 0 1] [0.5 0 0 1] [0 0 0 1] [0 0 0 1]]])))
+        (if (or (= x1 x2) (= y1 y2)) [(line-points (SimpleLine. p1 p2)) (iterate identity [0 0 0 1])]))))
 
-(line-points (SmoothLine. [] []))
-(apply str (line-points (SmoothLine. [] [])))

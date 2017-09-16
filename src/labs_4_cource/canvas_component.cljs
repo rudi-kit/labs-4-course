@@ -3,7 +3,7 @@
              :as
              can
              :refer
-             [Canvas clean DoubleCanvas draw-pixels enable-smoothing]]
+             [clean draw-pixels set-scale toggle-smoothing]]
             [labs-4-cource.primitives
              :refer
              [->BrezenhameLine
@@ -40,7 +40,6 @@
       (apply pr @next-primitive)
       (reset! next-primitive nil))))
 
-(defn all-pixels-col [] (->> @primitives (map line-points) (apply concat)))
 
 (defmulti draw-line (fn [ctx line] (type line)))
 (defmethod draw-line SimpleLine [ctx line]  (draw-pixels ctx (line-points line)) )
@@ -65,13 +64,11 @@
       (let [canvas1 (-> this
                         reagent/dom-node
                         .-firstChild)
-            canvas2 (-> this
-                        reagent/dom-node
-                        .-children
-                        (aget 1))]
+             ]
         (reset! events (can/canvas-events canvas1))
-        (reset! drawer (DoubleCanvas. (Canvas. canvas1) (Canvas. canvas2)))
-        (enable-smoothing @drawer false)))
+        (reset! drawer canvas1)
+        (set-scale @drawer 4)
+        (toggle-smoothing @drawer false)))
 
     :reagent-render
     (fn []
@@ -82,18 +79,5 @@
                  :onClick on-click
                  :height 320
                  :style {:border "solid 1px"}}]
-       [:canvas {:id "hidden"
-                 :hidden true
-                 :width 640
-                 :onClick on-click
-                 :height 320
-                 :style {:border "solid 1px"}}]])}))
+       ])}))
 
-
-(comment
-    (draw-pixels @drawer [[0 0]] [[0 255 0 1]])
-
- (draw-pixels @drawer [[0 1]] [[0 125 0 0.1]])
- (draw-pixels @drawer [[1 0]] [[0 255 125 1]])
- (draw-pixels @drawer [[1 1]] [[125 255 0 1]])
-    )
