@@ -19,12 +19,21 @@
           [x-step y-step] (calc-steps [(- x2 x1) (- y2 y1)])]
         (->>  [x1 y1 e]
               (iterate
-               (fn [[x y e]]
-                   (if (< e 0)
-                       ;; step throw longer axis
-                       [(+ x-step x) y (+ e (* 2 dy))]
-                       ;; extra step throw shorter axis
-                       [(+ x-step x) (+ y-step y) (+ e (* 2 dy) (- (* 2 dx)))])))
+               (if (spy :debug "x-axis longer"(<= dy dx))
+                   ;; x-axis longer
+                   (fn [[x y e]]
+                       (if (<= e 0)
+                           ;; step throw longer axis
+                           [(+ x-step x) y (+ e (* 2 dy))]
+                           ;; extra step throw shorter axis
+                           [(+ x-step x) (+ y-step y) (+ e (* 2 dy) (- (* 2 dx)))]))
+                   ;; y-axis longer
+                   (fn [[x y e]]
+                       (if (< e 0)
+                           ;; step throw longer axis
+                           [x (+ y y-step) (+ e (* 2 dy))]
+                           ;; extra step throw shorter axis
+                           [(+ x-step x) (+ y-step y) (+ e (* 2 dy) (- (* 2 dx)))]))))
               (map (fn [[x y e]]  [(floor x) (floor y) e]))
               (take (+ 1  dx))
               )))
@@ -41,7 +50,7 @@
           dy (/ (- y2 y1) length)]
         (->> [x1 y1]
              (iterate (fn [[x y]] [(+ x dx) (+ y dy)]))
-             (take length)
+             (take (+ 1 length))
              (map (fn [[x y]] [(floor x) (floor y)])))))
 
 (defmethod line-points :be [{:keys [p1 p2]}]
