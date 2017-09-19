@@ -80,7 +80,7 @@
                  :height @height
                  :style {:border "solid 1px"}}]
        [:canvas {:id "hidden"
-                 :hidden true
+                 :hidden false
                  :width @width
                  :onClick on-click
                  :height @height
@@ -96,3 +96,5 @@
 (comment (line-points (first @primitives))
          (draw-pixels @drawer (line-points (second @primitives)))
          (draw-pixels @drawer [[1 1]]))
+
+

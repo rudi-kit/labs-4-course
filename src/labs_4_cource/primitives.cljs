@@ -55,8 +55,8 @@
           e (- (* 2 dy) dx)
           length (max (Math/abs (- x2 x1)) (Math/abs (- y2 y1)))]
       (->> (brezenhame-line p1 p2)
-           (map (fn [[x y e]] [x y (/ (+ dx (Math/abs e)) (* 2 length))]))
-           (map (fn [[x y e]] [[x y (- 1 e)] [x (+ y 1) e]]))
+           (map (fn [[x y e]] [x y (/ (Math/abs (+ e 0.5)) (* 2 length))]))
+           (map (fn [[x y e]] [[x y e] [x (+ y 1) (- 1 e)]]))
            (mapcat identity))))
 
 (comment

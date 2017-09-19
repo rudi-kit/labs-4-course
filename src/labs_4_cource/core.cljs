@@ -1,8 +1,11 @@
 (ns labs-4-cource.core
   (:require [labs-4-cource.canvas :refer [clean]]
-            [labs-4-cource.canvas-component :refer [div-with-canvas]]
+            [labs-4-cource.canvas-component
+             :refer
+             [div-with-canvas draw-canvas-contents]]
             [labs-4-cource.debug-level-comonent :refer [debug-level-component]]
             [labs-4-cource.log-config :refer [log-level]]
+            [labs-4-cource.primitives :refer [->SimpleLine ->SmoothLine]]
             [labs-4-cource.scale-component :refer [scale-component]]
             [labs-4-cource.storage :refer [drawer primitives scale selected]]
             [reagent.core :as reagent]
@@ -10,7 +13,7 @@
 
 (enable-console-print!)
 
-(timbre/set-level! :debug)
+(timbre/set-level! :info)
 
 (defn toggles [selected values on-change]
     "radio buttons to choose line type"
@@ -47,4 +50,23 @@
     (reagent/render [home]
                     (.getElementById js/document "app")))
 
+
 (init!)
+(do
+    (reset! primitives
+            [
+             (->SmoothLine [80 80] [80 160])
+             (->SmoothLine [80 80] [95 160])
+             ;(->SmoothLine [80 80] [80 160])
+             ;(->SmoothLine [80 80] [80 160])
+             ;(->SmoothLine [80 80] [80 160])
+             ;(->SmoothLine [80 80] [80 160])
+             ;(->SmoothLine [80 80] [80 160])
+             ;(->SmoothLine [80 80] [80 160])
+             ;(->SmoothLine [80 80] [80 160])
+             ;(->SmoothLine [80 80] [0 80])
+             ;(->SmoothLine [80 80] [160 80])
+             ;(->SmoothLine [80 80] [80 0])
+             
+             ])
+    )
