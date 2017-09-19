@@ -1,77 +1,118 @@
 (ns labs-4-cource.primitives
   (:require [taoensso.timbre :as log :refer [get-env spy]]))
 
+(defn ->SimpleLine [p1 p2] {:type :simple :p1 p1 :p2 p2})
+(defn ->BrezenhameLine [p1 p2] {:type :be :p1 p1 :p2 p2})
+(defn ->SmoothLine [p1 p2] {:type :wu :p1 p1 :p2 p2})
+
 (defn floor [n]
   (int (+ n .5)))
 
 (defn calc-steps [coordinate]
   (mapv Math/sign coordinate))
 
-(defn next-brezenhame-point  [dx dy x-step y-step [x y e]]
-  )
-
-(defn brezenhame-line [p1 p2]
-    (let [[x1 y1] p1
-          [x2 y2] p2
-          dx  (Math/abs (- x2 x1))
-          dy  (Math/abs (- y2 y1))
-          e (- (* 2 dy) dx)
-          [x-step y-step] (calc-steps [(- x2 x1) (- y2 y1)])]
-        (->>  [x1 y1 e]
-              (iterate
-               (if (spy :debug "x-axis longer"(<= dy dx))
-                   ;; x-axis longer
-                   (fn [[x y e]]
-                       (if (<= e 0)
-                           ;; step throw longer axis
-                           [(+ x-step x) y (+ e (* 2 dy))]
-                           ;; extra step throw shorter axis
-                           [(+ x-step x) (+ y-step y) (+ e (* 2 dy) (- (* 2 dx)))]))
-                   ;; y-axis longer
-                   (fn [[x y e]]
-                       (if (< e 0)
-                           ;; step throw longer axis
-                           [x (+ y y-step) (+ e (* 2 dy))]
-                           ;; extra step throw shorter axis
-                           [(+ x-step x) (+ y-step y) (+ e (* 2 dy) (- (* 2 dx)))]))))
-              (map (fn [[x y e]]  [(floor x) (floor y) e]))
-              (take (+ 1  dx))
-              )))
-(comment
-    (brezenhame-line [1 4] [9 5]))
-
 
 (defmulti line-points :type)
+
 (defmethod line-points :simple [{:keys [p1 p2]}]
-    (let [[x1 y1] p1
-          [x2 y2] p2
+    (let [[x1 y1] p1 ;; first point
+          [x2 y2] p2 ;; second point
           length (max (Math/abs (- x2 x1)) (Math/abs (- y2 y1)))
-          dx (/ (- x2 x1) length)
-          dy (/ (- y2 y1) length)]
+          dx (/ (- x2 x1) length) ;; step throw x-axis
+          dy (/ (- y2 y1) length) ;; step throw y-axis
+          ;; choose center of first pixel
+          x1 (+ x1 (* 0.5 (Math/sign dx)))
+          y1 (+ y1 (* 0.5 (Math/sign dy)))]
         (->> [x1 y1]
              (iterate (fn [[x y]] [(+ x dx) (+ y dy)]))
              (take (+ 1 length))
              (map (fn [[x y]] [(floor x) (floor y)])))))
 
 (defmethod line-points :be [{:keys [p1 p2]}]
-    (map (fn [[x y]] [x y]) (brezenhame-line p1 p2)))
+    (let [[x1 y1] p1
+          [x2 y2] p2
+          dx  (- x2 x1)
+          dy  (- y2 y1)
+          [x-step y-step] (calc-steps [dx dy])
+          dx (Math/abs dx)
+          dy (Math/abs dy)
+          max (Math/max dx dy) ;; length of longest proection
+          min (Math/min dx dy) ;; length of shortest proection
+          ;; choose center of first pixel
+          x1 (+ x1 (* 0.5 (Math/sign dx)))
+          y1 (+ y1 (* 0.5 (Math/sign dy)))
+          e (- (* 2 min) max)
+          ]
+        (->>  [x1 y1 e]
+              (iterate
+               (if (spy :debug "x-axis longer" (<= dy dx))
+                   ;; x-axis longer
+                   (fn [[x y e]]
+                       (if (<= e 0)
+                           ;; step throw longer axis
+                           [(+ x-step x) y (+ e (* 2 min))]
+                           ;; extra step throw shorter axis
+                           [(+ x-step x) (+ y-step y) (+ (- e (* 2 max)) (* 2 min))]))
+                   ;; y-axis longer
+                   (fn [[x y e]]
+                       (if (<= e 0)
+                           ;; step throw longer axis
+                           [x (+ y y-step) (+ e (* 2 min))]
+                           ;; extra step throw shorter axis
+                           [(+ x-step x) (+ y-step y) (+ (- e (* 2 max)) (* 2 min))]))))
+              (map (fn [[x y e]]  [(floor x) (floor y) e]))
+              (take (+ 1  max))
+              ))
+    )
 
 (defmethod line-points :wu [{:keys [p1 p2]}]
     (let [[x1 y1] p1
           [x2 y2] p2
           dx  (Math/abs (- x2 x1))
           dy  (Math/abs (- y2 y1))
-          e (- (* 2 dy) dx)
-          length (max (Math/abs (- x2 x1)) (Math/abs (- y2 y1)))]
-      (->> (brezenhame-line p1 p2)
-           (map (fn [[x y e]] [x y (/ (Math/abs (+ e 0.5)) (* 2 length))]))
-           (map (fn [[x y e]] [[x y e] [x (+ y 1) (- 1 e)]]))
-           (mapcat identity))))
-
-(comment
-    
-    (line-points {:type :wu :p1 [1 4] :p2 [9 5]}))
-
-(defn ->SimpleLine [p1 p2] {:type :simple :p1 p1 :p2 p2})
-(defn ->BrezenhameLine [p1 p2] {:type :be :p1 p1 :p2 p2})
-(defn ->SmoothLine [p1 p2] {:type :wu :p1 p1 :p2 p2})
+          ;; speps throw axis
+          x-step (if (< x1 x2) 1 -1)
+          y-step (if (< y1 y2) 1 -1)
+          max (Math/max dx dy) ;; length of longest proection
+          ;; choose center of first pixel
+          x1 (+ x1 (* 0.5 (Math/sign dx)))
+          y1 (+ y1 (* 0.5 (Math/sign dy)))
+          min (Math/min dx dy) ;; length of shortest proection
+          ]
+        (if (or (= x1 x2) (= y1 y2) (= dx dy))
+            ;; draw horizontal | vertical | line
+            (->> (->BrezenhameLine p1 p2)
+                 line-points
+                 (map (fn [[x y]] [x y 1])))
+            (->> [x1 y1 (- (/ min max) 0.5)]
+                 (iterate
+                  (if (spy :debug "x-axis longer" (<= dy dx))
+                      ;; x-axis longer
+                      (fn [[x y e]]
+                          (if (<= e 0)
+                              ;; step throw longer axis
+                              [(+ x-step x) y (+ e (/ min max))]
+                              ;; extra step throw shorter axis
+                              [(+ x-step x) (+ y-step y) (+ (- e 1) (/ min max))]))
+                      ;; y-axis longer
+                      (fn [[x y e]]
+                          (if (<= e 0)
+                              ;; step throw longer axis
+                              [x (+ y y-step) (+ e (/ min max))]
+                              ;; extra step throw shorter axis
+                              [(+ x-step x) (+ y-step y) (+ (- e 1) (/ min max))]))))
+                 (map (fn [[x y e]] [x y (+ e .5)]))
+                 ;; points number equals length of basic axis
+                 (take (+ 1 max))
+                 (map
+                  ;; smooth across basis axis
+                  (if (>= dx dy)
+                      (fn [[x y e]] [[x y (- 1 e)] [x (+ y y-step) e]])
+                      (if (<= y1 y2)
+                          ;; reverse error
+                          (fn [[x y e]] [[x y e] [(+ x x-step) y (- 1 e)]])
+                          (fn [[x y e]] [[x y (- 1 e)] [(+ x x-step) y e]]))) )
+                 ;; collect flat list
+                 (mapcat identity)
+                 (map (fn [[x y e]]  [(floor x) (floor y) e]))))
+        ))

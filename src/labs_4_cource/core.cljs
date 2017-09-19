@@ -7,7 +7,9 @@
              :refer
              [->BrezenhameLine ->SimpleLine ->SmoothLine]]
             [labs-4-cource.scale-component :refer [scale-component]]
-            [labs-4-cource.storage :refer [drawer primitives scale selected]]
+            [labs-4-cource.storage
+             :refer
+             [drawer height primitives scale selected width]]
             [reagent.core :as reagent]
             [taoensso.timbre :as timbre :refer-macros [debug spy]]))
 
@@ -36,14 +38,78 @@
     (spy :debug "change-selected: " 
          (reset! selected value)))
 
+(def sun-lines [
+                '( [80 80] [160 80])
+                '( [80 80] [160 65])
+                '( [80 80] [160 20])
+                '( [80 80] [120 0])
+                '( [80 80] [80 0])
+                '( [80 80] [65 0])
+                '( [80 80] [0 20])
+                '( [80 80] [0 65])
+                '( [80 80] [0 80])
+                '( [80 80] [0 125])
+                '( [80 80] [25 160])
+                '( [80 80] [65 160])
+                '( [80 80] [125 160])
+                '( [80 80] [145 160])
+                '( [80 80] [160 160])
+                ])
+
+(def lines-generators {:simple ->SimpleLine :be ->BrezenhameLine :wu ->SmoothLine})
+
+(defonce sun-line-generator (reagent/atom :simple))
+(def line-types [:simple :be :wu])
+
+(defn draw-sun [key]
+    (clean-canvas)
+    (reset! sun-line-generator key)
+    (pr key)
+    (reset! primitives (doall (map (fn [[p1 p2]] ((key lines-generators) p1 p2)) sun-lines))))
+
+(defn get-value [event]
+    (->> event
+         (spy :debug)
+         .-target
+         .-value))
+
+(defn sun-lines-component [draw on-change]
+    [:div
+     [:button {:onClick draw} "draw"]
+     (->>
+      line-types
+      (map (fn [value]
+               ^{:key value}
+               [:label
+                [:input {:type "radio"
+                         :value value
+                         :checked (= value @sun-line-generator)
+                         :onClick (partial on-change value)}
+                 ]
+                value]))
+      doall)]
+    )
+
+(defn draw [] (draw-sun @sun-line-generator))
+
+(defn input [value-atom]
+    [:label
+     [:input {:type "text"
+              :value @value-atom
+              :onChange (comp get-value (spy :debug) (partial reset! value-atom))}]])
+
 (defn home []
     (debug "home")
     [:div
+     {:display "flex"}
      [div-with-canvas]
-     [toggles selected [:simple :be :smooth] change-selected]
-     [:button {:onClick clean-canvas} "clean"]
-     [scale-component @scale (partial reset! scale)]
-     [debug-level-component @log-level (partial reset! log-level)]])
+     [:div
+      [toggles selected  line-types change-selected]
+      [:button {:onClick clean-canvas} "clean"]
+      [scale-component @scale (partial reset! scale)]
+      [debug-level-component @log-level (partial reset! log-level)]
+      [sun-lines-component draw draw-sun]
+      ]])
 
 (defn ^:export init! []
     (debug "init")
@@ -52,66 +118,3 @@
 
 
 (init!)
-(comment (do
-     (clean-canvas)
-     (reset! primitives
-             [
-              (->SmoothLine [80 80] [160 80])
-              (->SmoothLine [80 80] [160 65])
-              (->SmoothLine [80 80] [160 20])
-              (->SmoothLine [80 80] [120 0])
-              (->SmoothLine [80 80] [80 0])
-              (->SmoothLine [80 80] [65 0])
-              (->SmoothLine [80 80] [0 20])
-              (->SmoothLine [80 80] [0 65])
-              (->SmoothLine [80 80] [0 80])
-              (->SmoothLine [80 80] [0 125])
-              (->SmoothLine [80 80] [25 160])
-              (->SmoothLine [80 80] [65 160])
-              (->SmoothLine [80 80] [125 160])
-              (->SmoothLine [80 80] [145 160])
-              (->SmoothLine [80 80] [160 160])
-              ])
-     ))
-(do
-    (clean-canvas)
-    (reset! primitives
-            [
-             (->BrezenhameLine [80 80] [160 80])
-             (->BrezenhameLine [80 80] [160 65])
-             (->BrezenhameLine [80 80] [160 20])
-             (->BrezenhameLine [80 80] [120 0])
-             (->BrezenhameLine [80 80] [80 0])
-             (->BrezenhameLine [80 80] [65 0])
-             (->BrezenhameLine [80 80] [0 20])
-             (->BrezenhameLine [80 80] [0 65])
-             (->BrezenhameLine [80 80] [0 80])
-             (->BrezenhameLine [80 80] [0 125])
-             (->BrezenhameLine [80 80] [25 160])
-             (->BrezenhameLine [80 80] [65 160])
-             (->BrezenhameLine [80 80] [125 160])
-             (->BrezenhameLine [80 80] [145 160])
-             (->BrezenhameLine [80 80] [160 160])
-             ])
-    )
-(comment (do
-     (clean-canvas)
-     (reset! primitives
-             [
-              (->SimpleLine [80 80] [160 80])
-              (->SimpleLine [80 80] [160 65])
-              (->SimpleLine [80 80] [160 20])
-              (->SimpleLine [80 80] [120 0])
-              (->SimpleLine [80 80] [80 0])
-              (->SimpleLine [80 80] [65 0])
-              (->SimpleLine [80 80] [0 20])
-              (->SimpleLine [80 80] [0 65])
-              (->SimpleLine [80 80] [0 80])
-              (->SimpleLine [80 80] [0 125])
-              (->SimpleLine [80 80] [25 160])
-              (->SimpleLine [80 80] [65 160])
-              (->SimpleLine [80 80] [125 160])
-              (->SimpleLine [80 80] [145 160])
-              (->SimpleLine [80 80] [160 160])
-              ])
-     ))

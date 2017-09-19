@@ -13,7 +13,7 @@
             [reagent.core :as reagent]
             [taoensso.timbre :as log :refer [spy]]))
 
-(def line-factories {:simple ->SimpleLine :be ->BrezenhameLine :smooth ->SmoothLine})
+(def line-factories {:simple ->SimpleLine :be ->BrezenhameLine :wu ->SmoothLine})
 
 (defn add-primitives [primitive]
   (swap! primitives (partial cons (spy :debug "add-primitive" primitive))))
@@ -80,7 +80,7 @@
                  :height @height
                  :style {:border "solid 1px"}}]
        [:canvas {:id "hidden"
-                 :hidden false
+                 :hidden true
                  :width @width
                  :onClick on-click
                  :height @height
