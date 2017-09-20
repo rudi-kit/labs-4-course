@@ -106,12 +106,16 @@
                  (take (+ 1 max))
                  (map
                   ;; smooth across basis axis
-                  (if (>= dx dy)
-                      (fn [[x y e]] [[x y (- 1 e)] [x (+ y y-step) e]])
-                      (if (<= y1 y2)
+                  (if (spy :debug "smoot across y-axis" (>= dx dy))
+                      ;; when y1 lesser then y2 line passes under center
+                      (if (spy :debug "passes under center" (<= y1 y2))
+                          (fn [[x y e]] [[x y e] [x (- y 1) (- 1 e)]])
+                          (fn [[x y e]] [[x y e] [x (+ y 1) (- 1 e)]]))
+                      ;; when x1 lesser then x2 line passes to the left of center
+                      (if (spy :debug "passes to the left of center" (<= x1 x2))
                           ;; reverse error
-                          (fn [[x y e]] [[x y e] [(+ x x-step) y (- 1 e)]])
-                          (fn [[x y e]] [[x y (- 1 e)] [(+ x x-step) y e]]))) )
+                          (fn [[x y e]] [[x y e] [(- x 1) y (- 1 e)]])
+                          (fn [[x y e]] [[x y e] [(+ x 1) y (- 1 e)]]))) )
                  ;; collect flat list
                  (mapcat identity)
                  (map (fn [[x y e]]  [(floor x) (floor y) e]))))
