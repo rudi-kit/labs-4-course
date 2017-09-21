@@ -4,13 +4,21 @@
             [labs-4-cource.primitives :refer [line-points]]
             [labs-4-cource.storage
              :refer
-             [debug-state
+             [add-primitives
+              debug-state
               drawer
+              lines-generators
+              next-primitive
               not-full-line
               primitives
               remove-debug-line!
-              save-debug-line!]]
+              selected]]
             [taoensso.timbre :as timbre :refer-macros [spy]]))
+
+(defn save-debug-line! []
+    (when-not (= (:line @not-full-line) nil)
+        (draw-pixels! @drawer (:rest-points @not-full-line))
+        (add-primitives (:line @not-full-line))))
 
 (defn draw-line-by-point! []
   (spy :debug "draw-point" (when-not (empty? (:rest-points @not-full-line)) (draw-pixels! @drawer [(first (:rest-points @not-full-line))])))
@@ -22,6 +30,14 @@
 (defn add-line-to-debug! [line]
   (save-debug-line!)
   (reset! not-full-line {:line line :rest-points (line-points line)}))
+
+(defn add-line-from-pos []
+  (when (spy :info (= (count @next-primitive) 2))
+      (let [line (spy :info (apply (@selected lines-generators) @next-primitive))]
+          (if (spy :info (= @debug-state :not))
+              (add-primitives line)
+              (add-line-to-debug! line))
+          (reset! next-primitive nil))))
 
 (deftest add-line-to-debug-test
   (reset! not-full-line nil)

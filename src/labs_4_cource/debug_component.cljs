@@ -11,5 +11,5 @@
              :onChange (comp change-debug-state keyword get-value)}
     [:option {:value :debug} :debug]
     [:option {:value :not} :not]]
-   [:button {:disabled (empty? (:rest-points true))
+   [:button {:disabled (empty? (:rest-points @not-full-line))
              :onClick draw-line-by-point!} :step]])
