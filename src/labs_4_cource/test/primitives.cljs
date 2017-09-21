@@ -1,4 +1,4 @@
-(ns labs-4-cource.test.primitives
+(ns ^:figwheel-always labs-4-cource.test.primitives
   (:require [cljs.test :refer-macros [are deftest run-tests]]
             [labs-4-cource.primitives
              :refer

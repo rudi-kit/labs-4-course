@@ -13,6 +13,12 @@
             [reagent.core :as reagent]
             [taoensso.timbre :as log :refer [spy]]))
 
+(defn clean-canvas []
+    "event handler of button clean canvas"
+    (spy :debug "clean-canvas")
+    (clean @drawer)
+    (reset! primitives nil))
+
 (def line-factories {:simple ->SimpleLine :be ->BrezenhameLine :wu ->SmoothLine})
 
 (defn add-primitives [primitive]
@@ -46,10 +52,6 @@
 (defn draw-canvas-contents [canvas]
   (doall (map (partial draw-line canvas) @primitives)))
 
-(defn clean-canvas []
-  "clean current canvas component"
-  (clean @drawer))
-
 (defn div-with-canvas []
   (reagent/create-class
    {:component-did-update
@@ -74,6 +76,7 @@
       @scale
       @primitives
       [:div.with-canvas
+       {:className "draw-area"}
        [:canvas {:id "visible"
                  :width @width
                  :onClick on-click
@@ -96,5 +99,4 @@
 (comment (line-points (first @primitives))
          (draw-pixels @drawer (line-points (second @primitives)))
          (draw-pixels @drawer [[1 1]]))
-
 

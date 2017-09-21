@@ -1,15 +1,14 @@
-(ns labs-4-cource.toogles)
+(ns ^:figwheel-always labs-4-cource.toogles
+  (:require [labs-4-cource.reagent-helpers :refer [get-value]]
+            [labs-4-cource.storage :refer [selected]]))
 
 (defn toggles [selected values on-change]
-    [:div
-     (doall (for [value values]
-                ^{:key value}
-                [:label 
-                 [:input {:type "radio"
-                          :checked (= @selected value)
-                          :onClick (partial on-change value)}]
-                 value]))])
-
-(defonce selected (reagent/atom :simple))
-
-(defn change-selected [value] (reset! selected value))
+    [:select {:value @selected
+              :onChange (comp on-change keyword get-value )}
+     (doall
+      (for [value values]
+          ^{:key value}
+          [:option {:value value
+                    :checked (= value @selected)
+                    }
+           value]))])

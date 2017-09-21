@@ -20,9 +20,7 @@
           length (max (Math/abs (- x2 x1)) (Math/abs (- y2 y1)))
           dx (/ (- x2 x1) length) ;; step throw x-axis
           dy (/ (- y2 y1) length) ;; step throw y-axis
-          ;; choose center of first pixel
-          x1 (+ x1 (* 0.5 (Math/sign dx)))
-          y1 (+ y1 (* 0.5 (Math/sign dy)))]
+          ]
         (->> [x1 y1]
              (iterate (fn [[x y]] [(+ x dx) (+ y dy)]))
              (take (+ 1 length))
@@ -63,6 +61,7 @@
               (map (fn [[x y e]]  [(floor x) (floor y) e]))
               (take (+ 1  max))
               ))
+    
     )
 
 (defmethod line-points :wu [{:keys [p1 p2]}]
@@ -74,13 +73,10 @@
           x-step (if (< x1 x2) 1 -1)
           y-step (if (< y1 y2) 1 -1)
           max (Math/max dx dy) ;; length of longest proection
-          ;; choose center of first pixel
-          x1 (+ x1 (* 0.5 (Math/sign dx)))
-          y1 (+ y1 (* 0.5 (Math/sign dy)))
           min (Math/min dx dy) ;; length of shortest proection
           ]
         (if (or (= x1 x2) (= y1 y2) (= dx dy))
-            ;; draw horizontal | vertical | line
+            ;; draw horizontal | vertical | lin
             (->> (->BrezenhameLine p1 p2)
                  line-points
                  (map (fn [[x y]] [x y 1])))
