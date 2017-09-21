@@ -30,14 +30,16 @@
 (defn draw [] (draw-sun @sun-line-generator))
 
 (defn sun-lines-component []
-  [:select
-   {:value @sun-line-generator
-    :onChange (comp draw-sun get-value)}
-   (doall
-    (for [value line-types]
-      ^{:key value}
-      [:option
-       {:value value}
-       value]))
-   [:button {:onClick draw} "draw"]])
+    [:span
+     [:select
+       {:value @sun-line-generator
+        :onChange (comp draw-sun keyword get-value)}
+       (doall
+        (for [value line-types]
+            ^{:key value}
+            [:option
+             {:value value}
+             value]))
+      ]
+     [:button {:onClick draw} "draw"]])
 

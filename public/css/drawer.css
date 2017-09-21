@@ -1,0 +1,12 @@
+.draw-container {
+    display: flex;
+    flex-flow: reverse;
+}
+
+.tool-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.draw-area {
+}

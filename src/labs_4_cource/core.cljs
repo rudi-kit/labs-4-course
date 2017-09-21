@@ -12,23 +12,26 @@
 (enable-console-print!)
 (timbre/set-level! :info)
 
-(defn home []
-    (debug "home")
-    [:div
-     {:className "draw-container"}
-     [div-with-canvas]
-     [:div
-      {:className "tool-panel"}
+(defn tool-panel []
+    [:div.tool-panel
       [toggles selected  line-types change-selected]
       [:button {:onClick clean-canvas} "clean"]
       [scale-component @scale (partial reset! scale)]
       [sun-lines-component]
-      ]])
+      ])
+
+(defn home []
+    (debug "home")
+    [:div.draw-container
+     [tool-panel]
+     [div-with-canvas]
+     ])
 
 (defn ^:export init! []
     (debug "init")
     (reagent/render [home]
-                    (.getElementById js/document "app")))
+                    (.getElementById js/document "app"))
+    )
 
 
 (init!)

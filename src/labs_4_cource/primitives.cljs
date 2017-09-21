@@ -36,9 +36,6 @@
           dy (Math/abs dy)
           max (Math/max dx dy) ;; length of longest proection
           min (Math/min dx dy) ;; length of shortest proection
-          ;; choose center of first pixel
-          x1 (+ x1 (* 0.5 (Math/sign dx)))
-          y1 (+ y1 (* 0.5 (Math/sign dy)))
           e (- (* 2 min) max)
           ]
         (->>  [x1 y1 e]
@@ -97,7 +94,7 @@
                               [x (+ y y-step) (+ e (/ min max))]
                               ;; extra step throw shorter axis
                               [(+ x-step x) (+ y-step y) (+ (- e 1) (/ min max))]))))
-                 (map (fn [[x y e]] [x y (+ e .5)]))
+                 (map (fn [[x y e]] [x y (+ e 1 (- (/ min max)))]))
                  ;; points number equals length of basic axis
                  (take (+ 1 max))
                  (map
