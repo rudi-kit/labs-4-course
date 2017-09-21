@@ -10,7 +10,7 @@
 
 (defn get-ctx "get 2d context of canvas" [canvas] (.getContext canvas "2d"))
 
-(defn toggle-smoothing
+(defn toggle-smoothing!
     "set smoothing value of canvas context.
      use all known browser prefixes"
     [{:keys [visible hidden]} flag]
@@ -25,29 +25,29 @@
 
 (defn rgba "collect css rgba string" [[r g b a]] (str "rgba(" r "," g "," b "," a ")"))
 
-(defn draw-pixel
+(defn- draw-pixel!
     "draw pixel on canvas"
-    [canvas [x y e] color]
-    (debug [x y e] color)
+    [canvas [x y e]]
+    (debug [x y e])
     (let [ctx (get-ctx canvas)]
         (set! (.-fillStyle ctx) (rgba [0 0 0 e]))
         (.fillRect ctx x y 1 1)))
 
-(defn draw-pixels
+(defn draw-pixels!
     "get collection of pixels and draw it"
     ([{:keys [visible hidden]} points colors]
-     (doall (map (partial draw-pixel hidden) points colors ))
+     (doall (map (partial draw-pixel! hidden) points colors ))
      (-> (get-ctx visible) (.clearRect 0 0 @width @height))
      (.drawImage (get-ctx visible) hidden 0 0 (/ @width @scale) (/ @height @scale) 0 0 @width @height)
      )
     ([canvas points]
-     (draw-pixels canvas points (iterate identity [0 0 0 1]))))
+     (draw-pixels! canvas points (iterate identity [0 0 0 1]))))
 
-(defn clean
+(defn clean!
     "clean pair of canvases"
     [{:keys [visible hidden]}]
     (-> (get-ctx visible) (.clearRect 0 0 @width @height))
     (-> (get-ctx hidden) (.clearRect 0 0 @width @height)))
 
-(defn set-scale [canvas scale]
+(defn set-scale! [canvas scale]
     (-> canvas :visible get-ctx (.scale scale scale)))

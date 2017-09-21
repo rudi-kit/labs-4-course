@@ -1,23 +1,26 @@
 (ns labs-4-cource.core
-  (:require [labs-4-cource.canvas-component :refer [clean-canvas div-with-canvas]]
-            [labs-4-cource.line-examples :refer [sun-lines-component]]
-            [labs-4-cource.scale-component :refer [scale-component]]
-            [labs-4-cource.storage
-             :refer
-             [change-selected line-types scale selected]]
-            [labs-4-cource.toogles :refer [toggles]]
-            [reagent.core :as reagent]
-            [taoensso.timbre :as timbre :refer-macros [debug]]))
+    (:require [labs-4-cource.canvas-component :refer [clean-canvas! div-with-canvas]]
+              [labs-4-cource.debug-component :refer [debug-component]]
+              [labs-4-cource.line-examples :refer [sun-lines-component]]
+              [labs-4-cource.scale-component :refer [scale-component]]
+              [labs-4-cource.storage
+               :refer
+               [change-selected line-types scale selected]]
+              [labs-4-cource.toogles :refer [toggles]]
+              [reagent.core :as reagent]
+              [taoensso.timbre :as timbre :refer-macros [debug]]
+              [labs-4-cource.debug :refer [draw-canvas-contents!]]))
 
 (enable-console-print!)
-(timbre/set-level! :info)
+(timbre/set-level! :debug)
 
 (defn tool-panel []
     [:div.tool-panel
       [toggles selected  line-types change-selected]
-      [:button {:onClick clean-canvas} "clean"]
+      [:button {:onClick clean-canvas!} "clean"]
       [scale-component @scale (partial reset! scale)]
-      [sun-lines-component]
+     [sun-lines-component]
+     [debug-component]
       ])
 
 (defn home []
@@ -31,6 +34,8 @@
     (debug "init")
     (reagent/render [home]
                     (.getElementById js/document "app"))
+
+    (draw-canvas-contents!)
     )
 
 

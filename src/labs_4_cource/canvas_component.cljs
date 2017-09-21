@@ -1,16 +1,24 @@
 (ns labs-4-cource.canvas-component
-  (:require [labs-4-cource.canvas :as can :refer [clean toggle-smoothing]]
-            [labs-4-cource.debug :refer [draw-canvas-contents]]
+  (:require [labs-4-cource.canvas :as can :refer [clean! toggle-smoothing!]]
+            [labs-4-cource.debug :refer [draw-canvas-contents! draw-line!]]
             [labs-4-cource.storage
              :refer
-             [add-pos drawer events height primitives scale width]]
+             [add-line-from-pos
+              add-pos
+              add-primitives-hook
+              drawer
+              events
+              height
+              primitives
+              scale
+              width]]
             [reagent.core :as reagent]
             [taoensso.timbre :as log :refer [spy]]))
 
-(defn clean-canvas []
+(defn clean-canvas! []
   "event handler of button clean canvas"
   (spy :debug "clean-canvas")
-  (clean @drawer)
+  (clean! @drawer)
   (reset! primitives nil))
 
 (defn event-pos->vector [pos]
@@ -20,16 +28,15 @@
   (spy :debug [[x y] scale]
        [(/ x scale) (/ y scale)]))
 
-(defn on-click [event]
-  (-> @events (.getMousePos event) event-pos->vector (scale-> @scale) add-pos))
+(defn on-click! [event]
+  (-> @events (.getMousePos event) event-pos->vector (scale-> @scale) add-pos)
+  (add-line-from-pos))
+
+(reset! add-primitives-hook (partial draw-line! @drawer))
 
 (defn div-with-canvas []
   (reagent/create-class
-   {:component-did-update
-    (fn [this]
-      (draw-canvas-contents @drawer))
-
-    :component-did-mount
+   {:component-did-mount
     (fn [this]
       (let [canvas1 (-> this
                         reagent/dom-node
@@ -38,9 +45,11 @@
                         reagent/dom-node
                         .-children
                         (aget 1))]
+          (spy :info "init canvas-component")
         (reset! events (can/canvas-events canvas1))
         (reset! drawer {:visible canvas1 :hidden canvas2})
-        (toggle-smoothing @drawer false)))
+        (draw-canvas-contents!)
+        (toggle-smoothing! @drawer false)))
 
     :reagent-render
     (fn []
@@ -49,12 +58,11 @@
       [:div.draw-area
        [:canvas {:id "visible"
                  :width @width
-                 :onClick on-click
+                 :onClick on-click!
                  :height @height
                  :style {:border "solid 1px"}}]
        [:canvas {:id "hidden"
                  :hidden true
                  :width @width
-                 :onClick on-click
                  :height @height
                  :style {:border "solid 1px"}}]])}))

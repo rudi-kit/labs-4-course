@@ -1,5 +1,5 @@
 (ns labs-4-cource.line-examples
-  (:require [labs-4-cource.canvas-component :refer [clean-canvas]]
+  (:require [labs-4-cource.canvas-component :refer [clean-canvas!]]
             [labs-4-cource.reagent-helpers :refer [get-value]]
             [labs-4-cource.storage
              :refer
@@ -22,7 +22,7 @@
                 '([80 80] [160 160])])
 
 (defn draw-sun [key]
-  (clean-canvas)
+  (clean-canvas!)
   (reset! sun-line-generator key)
   (pr key)
   (reset! primitives (doall (map (fn [[p1 p2]] ((key lines-generators) p1 p2)) sun-lines))))

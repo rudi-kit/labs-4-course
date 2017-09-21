@@ -14,6 +14,7 @@
 
 (defmulti line-points :type)
 
+;; CDA algo
 (defmethod line-points :simple [{:keys [p1 p2]}]
     (let [[x1 y1] p1 ;; first point
           [x2 y2] p2 ;; second point
@@ -26,11 +27,13 @@
              (take (+ 1 length))
              (map (fn [[x y]] [(floor x) (floor y)])))))
 
+;; Brezenhame algo
 (defmethod line-points :be [{:keys [p1 p2]}]
     (let [[x1 y1] p1
           [x2 y2] p2
           dx  (- x2 x1)
           dy  (- y2 y1)
+          ;; where to go
           [x-step y-step] (calc-steps [dx dy])
           dx (Math/abs dx)
           dy (Math/abs dy)
@@ -38,6 +41,7 @@
           min (Math/min dx dy) ;; length of shortest proection
           e (- (* 2 min) max)
           ]
+        ;; first point
         (->>  [x1 y1 e]
               (iterate
                (if (spy :debug "x-axis longer" (<= dy dx))
@@ -55,15 +59,18 @@
                            [x (+ y y-step) (+ e (* 2 min))]
                            ;; extra step throw shorter axis
                            [(+ x-step x) (+ y-step y) (+ (- e (* 2 max)) (* 2 min))]))))
-              (map (fn [[x y e]]  [(floor x) (floor y) e]))
+              ;; point coordinate should be int
+              (map (fn [[x y]]  [(floor x) (floor y)]))
               (take (+ 1  max))
               ))
     
     )
 
+;; Wu algo
 (defmethod line-points :wu [{:keys [p1 p2]}]
     (let [[x1 y1] p1
           [x2 y2] p2
+          ;; proections
           dx  (Math/abs (- x2 x1))
           dy  (Math/abs (- y2 y1))
           ;; speps throw axis
@@ -94,6 +101,7 @@
                               [x (+ y y-step) (+ e (/ min max))]
                               ;; extra step throw shorter axis
                               [(+ x-step x) (+ y-step y) (+ (- e 1) (/ min max))]))))
+                 ;; normalize error (it has value in range [(-1 + (min/max)),(min/max)]
                  (map (fn [[x y e]] [x y (+ e 1 (- (/ min max)))]))
                  ;; points number equals length of basic axis
                  (take (+ 1 max))
