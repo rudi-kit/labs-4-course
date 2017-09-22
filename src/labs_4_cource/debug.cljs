@@ -33,8 +33,8 @@
 
 (defn add-line-from-pos []
   (when (spy :info (= (count @next-primitive) 2))
-      (let [line (spy :info (apply (@selected lines-generators) @next-primitive))]
-          (if (spy :info (= @debug-state :not))
+      (let [line (spy :info "new-line" (apply (@selected lines-generators) @next-primitive))]
+          (if (= @debug-state :not)
               (add-primitives line)
               (add-line-to-debug! line))
           (reset! next-primitive nil))))

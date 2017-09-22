@@ -3,7 +3,11 @@
             [labs-4-cource.reagent-helpers :refer [get-value]]
             [labs-4-cource.storage
              :refer
-             [line-types lines-generators primitives sun-line-generator]]))
+             [debug-state
+              line-types
+              lines-generators
+              primitives
+              sun-line-generator]]))
 
 (def sun-lines ['([80 80] [160 80])
                 '([80 80] [160 65])
@@ -41,5 +45,6 @@
              {:value value}
              value]))
       ]
-     [:button {:onClick draw} "draw"]])
+     [:button {:onClick draw
+               :disabled (not (= @debug-state :not))} "draw"]])
 

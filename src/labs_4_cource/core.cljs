@@ -6,10 +6,12 @@
             [labs-4-cource.scale-component :refer [scale-component]]
             [labs-4-cource.storage
              :refer
-             [add-primitives-hook change-selected drawer line-types scale selected]]
+             [ change-selected drawer line-types scale selected]]
             [labs-4-cource.toogles :refer [toggles]]
             [reagent.core :as reagent]
-            [taoensso.timbre :as timbre :refer-macros [debug]]))
+            [taoensso.timbre :as timbre :refer-macros [debug]]
+            [labs-4-cource.updaters]
+            ))
 
 (enable-console-print!)
 (timbre/set-level! :info)
@@ -36,7 +38,6 @@
                     (.getElementById js/document "app"))
 
     (draw-canvas-contents!)
-(reset! add-primitives-hook (partial draw-line! @drawer))
     )
 
 

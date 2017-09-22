@@ -33,12 +33,15 @@
         (set! (.-fillStyle ctx) (rgba [0 0 0 e]))
         (.fillRect ctx x y 1 1)))
 
+(defn swap-hidden-to-visible! [{:keys [visible hidden]}]
+    (-> (get-ctx visible) (.clearRect 0 0 @width @height))
+    (.drawImage (get-ctx visible) hidden 0 0 (/ @width @scale) (/ @height @scale) 0 0 @width @height))
+
 (defn draw-pixels!
     "get collection of pixels and draw it"
     ([{:keys [visible hidden]} points colors]
      (doall (map (partial draw-pixel! hidden) points colors ))
-     (-> (get-ctx visible) (.clearRect 0 0 @width @height))
-     (.drawImage (get-ctx visible) hidden 0 0 (/ @width @scale) (/ @height @scale) 0 0 @width @height)
+     (swap-hidden-to-visible! {:visible visible :hidden hidden})
      )
     ([canvas points]
      (draw-pixels! canvas points (iterate identity [0 0 0 1]))))

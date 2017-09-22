@@ -20,14 +20,10 @@
 (defonce next-primitive (atom nil))
 
 (defn add-pos [pos]
-  (swap! next-primitive (partial cons (spy :debug "next-pos" pos))))
+  (swap! next-primitive (fn [old-points] (concat old-points [pos]))))
 
-(defonce add-primitives-hook (atom nil))
 (defn add-primitives [line]
-  (swap! primitives (partial cons (spy :debug "add-primitive" line)))
-    (when (= @debug-state :not)
-        (@add-primitives-hook (spy :debug "add-primitives-hook" line))))
-
+  (swap! primitives (fn [old-state] (concat old-state [(spy :debug "add-primitive" line)]))))
 
 (defonce events (reagent/atom nil))
 (defonce selected (reagent/atom :simple))
@@ -46,4 +42,3 @@
 
 (defn remove-debug-line! []
   (reset! not-full-line nil))
-

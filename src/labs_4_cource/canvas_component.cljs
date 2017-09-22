@@ -4,7 +4,6 @@
               [labs-4-cource.storage
                :refer
                [add-pos
-                add-primitives-hook
                 drawer
                 events
                 height
@@ -32,8 +31,6 @@
   (-> @events (.getMousePos event) event-pos->vector (scale-> @scale) add-pos)
   (add-line-from-pos))
 
-(reset! add-primitives-hook (partial draw-line! @drawer))
-
 (defn div-with-canvas []
   (reagent/create-class
    {:component-did-mount
@@ -52,8 +49,6 @@
 
     :reagent-render
     (fn []
-      @scale
-      @primitives
       [:div.draw-area
        [:canvas {:id "visible"
                  :width @width
