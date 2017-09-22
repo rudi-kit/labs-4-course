@@ -1,7 +1,7 @@
 (ns labs-4-cource.canvas
   (:require [canvas.events :as evt]
             [labs-4-cource.storage :refer [height scale width]]
-            [taoensso.timbre :as log :refer [debug]]))
+            [taoensso.timbre :as log :refer [debug spy]]))
 
 (defn canvas-events "create js object wich tracks mouse position"
     [canvas] (let [events (new evt/events canvas)]
@@ -10,18 +10,20 @@
 
 (defn get-ctx "get 2d context of canvas" [canvas] (.getContext canvas "2d"))
 
+(defn- toggle-smoothing [ctx flag]
+  (spy :debug (aset ctx "imageSmoothingEnabled" flag))
+  (spy :debug (aset ctx "mozImageSmoothingEnabled"  flag))
+  (spy :debug (aset ctx "ebkitImageSmoothingEnabled"  flag))
+  (spy :debug (aset ctx "sImageSmoothingEnabled"  flag)))
+
 (defn toggle-smoothing!
-    "set smoothing value of canvas context.
+  "set smoothing value of canvas context.
      use all known browser prefixes"
-    [{:keys [visible hidden]} flag]
-    (let [toggle (fn [ctx]
-                     (set! (.-imageSmoothingEnabled ctx) flag)
-                     (set! (.-mozImageSmoothingEnabled ctx) flag)
-                     (set! (.-webkitImageSmoothingEnabled ctx) flag)
-                     (set! (.-msImageSmoothingEnabled ctx) flag))]
-        (toggle (get-ctx visible))
-        (toggle (get-ctx hidden))
-        ))
+  [{:keys [visible hidden]} flag]
+    (debug "toggle smothing " flag)
+    (toggle-smoothing (get-ctx visible) flag)
+    (toggle-smoothing (get-ctx hidden) flag)
+  )
 
 (defn rgba "collect css rgba string" [[r g b a]] (str "rgba(" r "," g "," b "," a ")"))
 

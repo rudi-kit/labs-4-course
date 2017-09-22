@@ -1,6 +1,6 @@
 (ns labs-4-cource.canvas-component
     (:require [labs-4-cource.canvas :as can :refer [clean! toggle-smoothing!]]
-              [labs-4-cource.debug :refer [add-line-from-pos draw-line!]]
+              [labs-4-cource.debugger :refer [add-line-from-pos draw-line!]]
               [labs-4-cource.storage
                :refer
                [add-pos

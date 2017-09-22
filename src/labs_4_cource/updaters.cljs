@@ -1,7 +1,7 @@
 (ns labs-4-cource.updaters
   (:require [clojure.data :refer [diff]]
             [labs-4-cource.canvas :refer [clean! swap-hidden-to-visible!]]
-            [labs-4-cource.debug
+            [labs-4-cource.debugger
              :refer
              [draw-canvas-contents! draw-line! save-debug-line!]]
             [labs-4-cource.storage
