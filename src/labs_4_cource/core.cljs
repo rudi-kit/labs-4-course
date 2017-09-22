@@ -1,6 +1,6 @@
 (ns labs-4-cource.core
   (:require [labs-4-cource.canvas-component :refer [clean-canvas! div-with-canvas]]
-            [labs-4-cource.debug :refer [draw-canvas-contents! draw-line!]]
+            [labs-4-cource.debugger :refer [draw-canvas-contents! draw-line!]]
             [labs-4-cource.debug-component :refer [debug-component]]
             [labs-4-cource.line-examples :refer [sun-lines-component]]
             [labs-4-cource.scale-component :refer [scale-component]]
@@ -14,7 +14,7 @@
             ))
 
 (enable-console-print!)
-(timbre/set-level! :info)
+(timbre/set-level! :debug)
 
 (defn tool-panel []
     [:div.tool-panel
@@ -39,6 +39,3 @@
 
     (draw-canvas-contents!)
     )
-
-
-(init!)

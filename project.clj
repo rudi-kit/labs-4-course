@@ -1,4 +1,4 @@
-(defproject labs-4-cource "0.1.0"
+(defproject labs-4-cource "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -51,7 +51,11 @@
                          :output-dir "public/js/release"
                          :asset-path   "js/out"
                          :optimizations :advanced
-                         :pretty-print false}}}}
+                         :pretty-print false
+                         :foreign-libs [{
+                                         :file "public/libs/events.js"
+                                         :provides ["canvas.events"]
+                                         :module-type :commonjs}]}}}}
 
   :aliases {"package" ["do" "clean" ["cljsbuild" "once" "release"]]}
 
