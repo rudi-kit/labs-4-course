@@ -1,4 +1,4 @@
-(ns labs-4-cource.debugger
+(ns labs-4-cource.debuging
   (:require [cljs.test :refer-macros [deftest]]
             [labs-4-cource.canvas :refer [draw-pixels!]]
             [labs-4-cource.primitives :refer [line-points]]
@@ -16,12 +16,12 @@
             [taoensso.timbre :as timbre :refer-macros [spy]]))
 
 (defn save-debug-line! []
-    (when-not (= (:line @not-full-line) nil)
+    (when-not (nil? (:line @not-full-line))
         (draw-pixels! @drawer (:rest-points @not-full-line))
         (add-primitives (:line @not-full-line))))
 
 (defn draw-line-by-point! []
-  (spy :debug "draw-point" (when-not (empty? (:rest-points @not-full-line)) (draw-pixels! @drawer [(first (:rest-points @not-full-line))])))
+  (spy :debug "draw-point" (when (seq (:rest-points @not-full-line)) (draw-pixels! @drawer [(first (:rest-points @not-full-line))])))
   (swap! not-full-line assoc :rest-points (rest (:rest-points @not-full-line)))
   (when (empty? (:rest-points @not-full-line))
     (save-debug-line!)

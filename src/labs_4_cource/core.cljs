@@ -1,6 +1,6 @@
 (ns labs-4-cource.core
   (:require [labs-4-cource.canvas-component :refer [clean-canvas! div-with-canvas]]
-            [labs-4-cource.debugger :refer [draw-canvas-contents! draw-line!]]
+            [labs-4-cource.debuging :refer [draw-canvas-contents! draw-line!]]
             [labs-4-cource.debug-component :refer [debug-component]]
             [labs-4-cource.line-examples :refer [sun-lines-component]]
             [labs-4-cource.scale-component :refer [scale-component]]
@@ -11,6 +11,7 @@
             [reagent.core :as reagent]
             [taoensso.timbre :as timbre :refer-macros [debug]]
             [labs-4-cource.updaters]
+            [labs-4-cource.circles]
             ))
 
 (enable-console-print!)

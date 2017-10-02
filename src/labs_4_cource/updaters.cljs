@@ -1,7 +1,7 @@
 (ns labs-4-cource.updaters
   (:require [clojure.data :refer [diff]]
             [labs-4-cource.canvas :refer [clean! swap-hidden-to-visible!]]
-            [labs-4-cource.debugger
+            [labs-4-cource.debuging
              :refer
              [draw-canvas-contents! draw-line! save-debug-line!]]
             [labs-4-cource.storage
@@ -19,7 +19,7 @@
 (defn draw-changes [key reference old-state new-state]
   (let [[old new] (spy :debug "primitives changes" (diff old-state new-state))]
       (when (= @debug-state :not)
-          (doall (for [line new] (when-not (= line nil)     (draw-line! @drawer line)))))))
+          (doall (for [line new] (when-not (nil? line)     (draw-line! @drawer line)))))))
 
 (defn add-to-primitives! [key reference old-state new-state]
     (if (= new-state :not)

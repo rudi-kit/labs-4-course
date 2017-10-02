@@ -36,7 +36,7 @@
         (.fillRect ctx x y 1 1)))
 
 (defn swap-hidden-to-visible! [{:keys [visible hidden]}]
-    (-> (get-ctx visible) (.clearRect 0 0 @width @height))
+    (.clearRect (get-ctx visible) 0 0 @width @height)
     (.drawImage (get-ctx visible) hidden 0 0 (/ @width @scale) (/ @height @scale) 0 0 @width @height))
 
 (defn draw-pixels!
@@ -51,8 +51,8 @@
 (defn clean!
     "clean pair of canvases"
     [{:keys [visible hidden]}]
-    (-> (get-ctx visible) (.clearRect 0 0 @width @height))
-    (-> (get-ctx hidden) (.clearRect 0 0 @width @height)))
+    (.clearRect (get-ctx visible) 0 0 @width @height)
+    (.clearRect (get-ctx hidden) 0 0 @width @height))
 
 (defn set-scale! [canvas scale]
-    (-> canvas :visible get-ctx (.scale scale scale)))
+    (.scale (get-ctx (:visible canvas)) scale scale))
