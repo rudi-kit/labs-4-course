@@ -10,9 +10,9 @@ pom.xml.asc
 /.nrepl-port
 /resources/public/js
 /public/js/out
+/public/js/
 /out
 /.repl
 *.log
-/.env
 *.indium
 *.tern*
