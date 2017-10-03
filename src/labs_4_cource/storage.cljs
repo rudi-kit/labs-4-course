@@ -1,5 +1,6 @@
 (ns labs-4-cource.storage
-  (:require [labs-4-cource.primitives
+  (:require [labs-4-cource.circles :refer [->Circle]]
+            [labs-4-cource.primitives
              :refer
              [->BrezenhameLine ->SimpleLine ->SmoothLine]]
             [reagent.core :as reagent]
@@ -30,9 +31,10 @@
 
 (defonce sun-line-generator (reagent/atom :simple))
 
-(def lines-generators {:simple ->SimpleLine :be ->BrezenhameLine :wu ->SmoothLine})
+(def lines-generators {:simple ->SimpleLine :be ->BrezenhameLine :wu ->SmoothLine :circle ->Circle})
 
-(def line-types [:simple :be :wu])
+(def line-types [:simple :be :wu :circle])
+
 
 (defn change-selected [value]
   (spy :info "change-selected"

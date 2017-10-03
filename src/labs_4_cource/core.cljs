@@ -1,18 +1,17 @@
 (ns labs-4-cource.core
   (:require [labs-4-cource.canvas-component :refer [clean-canvas! div-with-canvas]]
-            [labs-4-cource.debuging :refer [draw-canvas-contents! draw-line!]]
+            [labs-4-cource.circles :refer [->Circle]]
             [labs-4-cource.debug-component :refer [debug-component]]
+            [labs-4-cource.debuging :refer [draw-canvas-contents!]]
             [labs-4-cource.line-examples :refer [sun-lines-component]]
             [labs-4-cource.scale-component :refer [scale-component]]
             [labs-4-cource.storage
              :refer
-             [ change-selected drawer line-types scale selected]]
+             [change-selected line-types primitives scale selected]]
             [labs-4-cource.toogles :refer [toggles]]
             [reagent.core :as reagent]
             [taoensso.timbre :as timbre :refer-macros [debug]]
-            [labs-4-cource.updaters]
-            [labs-4-cource.circles]
-            ))
+            [labs-4-cource.updaters]))
 
 (enable-console-print!)
 (timbre/set-level! :debug)
@@ -39,4 +38,5 @@
                     (.getElementById js/document "app"))
 
     (draw-canvas-contents!)
+    (swap! primitives conj (->Circle [10 10] [0 8]))
     )

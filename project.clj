@@ -7,6 +7,7 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.908"]
                  [reagent "0.7.0"]
+                 [net.mikera/core.matrix "0.61.0"]
                  [com.taoensso/timbre "4.10.0"]]
 
   :plugins [[lein-cljsbuild "1.1.5"]
@@ -36,14 +37,12 @@
                          :source-map true
                          :optimizations :none
                          :pretty-print  true
-                         :foreign-libs [{
-                                         :file "public/libs/events.js"
+                         :foreign-libs [{:file "public/libs/events.js"
                                          :provides ["canvas.events"]
                                          :module-type :commonjs}]}
                         :figwheel
                         {:on-jsload "labs-4-cource.core/init!"
-                         :open-urls ["http://localhost:3449/index.html"]
-                         }}
+                         :open-urls ["http://localhost:3449/index.html"]}}
                        :release
                        {:source-paths ["src" "env/prod/cljs"]
                         :compiler
@@ -52,8 +51,7 @@
                          :asset-path   "js/out"
                          :optimizations :advanced
                          :pretty-print false
-                         :foreign-libs [{
-                                         :file "public/libs/events.js"
+                         :foreign-libs [{:file "public/libs/events.js"
                                          :provides ["canvas.events"]
                                          :module-type :commonjs}]}}}}
 

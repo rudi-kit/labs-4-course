@@ -45,11 +45,12 @@
   (= @not-full-line {:line {:type :wu [0 0] [5 5]}
                      :rest-points '([0 0 1] [1 1 1] [2 2 1] [3 3 1] [4 4 1] [5 5 1])}))
 
-(defmulti draw-line! (fn [canvas line] (spy :debug (str "draw-line" line) [(:type line) @debug-state])))
+(defmulti draw-line! (fn [canvas line]  (spy :debug (str "draw-line" line) [(:type line) @debug-state])))
 
 (derive :simple ::line)
 (derive :be     ::line)
 (derive :wu     ::line)
+(derive :circle ::line)
 
 (defmethod draw-line! [:wu    :not] [canvas line]  (draw-pixels! canvas (line-points line)))
 (defmethod draw-line! [::line :not] [canvas line]  (draw-pixels! canvas (map (fn [[x y]] [x y 1]) (line-points line))))
