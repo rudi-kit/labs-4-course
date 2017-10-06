@@ -1,6 +1,8 @@
 (ns labs-4-cource.line-examples
   (:require [labs-4-cource.canvas-component :refer [clean-canvas!]]
+            [labs-4-cource.primitives :refer [->SimpleLine]]
             [labs-4-cource.reagent-helpers :refer [get-value]]
+            [clojure.core.matrix :as m]
             [labs-4-cource.storage
              :refer
              [debug-state
@@ -24,6 +26,35 @@
                 '([80 80] [125 160])
                 '([80 80] [145 160])
                 '([80 80] [160 160])])
+
+(def piramid [[0 0 0 1]
+              [100 0 0 1]
+              [50 100 0 1]
+              [0 0 100 1]]
+    )
+
+(defn decart [col]
+    (mapcat identity
+            (for [a col]
+                (for [b col]
+                    [a b]))))
+
+(defn all-lines [points]
+    (map (fn [[p1 p2]] (->SimpleLine p1 p2)) (decart points)))
+
+(comment
+    (reset! labs-4-cource.storage/primitives
+            (all-lines piramid))
+
+    (reset! labs-4-cource.storage/primitives
+            (all-lines (m/mmul piramid
+                               [[(Math/cos (/ Math/PI 4)) 0 (- (Math/sin (/ Math/PI 4) )) 0]
+                                [0                        1 0                             0]
+                                [(Math/sin (/ Math/PI 4)) 0 (Math/cos (/ Math/PI 4))      0]
+                                [0                        0  0                            1]])
+                       ))
+
+    )
 
 (defn draw-sun [key]
   (clean-canvas!)

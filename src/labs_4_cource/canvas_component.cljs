@@ -1,18 +1,12 @@
 (ns labs-4-cource.canvas-component
-    (:require [labs-4-cource.canvas :as can :refer [clean! toggle-smoothing!]]
-              [labs-4-cource.debuging :refer [add-line-from-pos draw-line!]]
-              [labs-4-cource.storage
-               :refer
-               [add-pos
-                drawer
-                events
-                height
-                primitives
-                scale
-                width]]
-              [reagent.core :as reagent]
-              [taoensso.timbre :as log :refer [spy]]
-              [labs-4-cource.storage :refer [drawer]]))
+  (:require [labs-4-cource.canvas :as can :refer [clean! toggle-smoothing!]]
+            [labs-4-cource.debuging :refer [add-line-from-pos]]
+            [labs-4-cource.storage
+             :refer
+             [add-pos drawer events height primitives scale width]]
+            [labs-4-cource.updaters :refer [registrate-handlers]]
+            [reagent.core :as reagent]
+            [taoensso.timbre :as log :refer [spy]]))
 
 (defn clean-canvas! []
   "event handler of button clean canvas"
@@ -45,7 +39,8 @@
           (spy :info "init canvas-component")
         (reset! events (can/canvas-events canvas1))
         (reset! drawer {:visible canvas1 :hidden canvas2})
-        (toggle-smoothing! @drawer false)))
+        (toggle-smoothing! @drawer false)
+        (registrate-handlers drawer)))
 
     :reagent-render
     (fn []

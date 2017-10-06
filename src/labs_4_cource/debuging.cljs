@@ -51,6 +51,7 @@
 (derive :be     ::line)
 (derive :wu     ::line)
 (derive :circle ::line)
+(derive :elipse ::line)
 
 (defmethod draw-line! [:wu    :not] [canvas line]  (draw-pixels! canvas (line-points line)))
 (defmethod draw-line! [::line :not] [canvas line]  (draw-pixels! canvas (map (fn [[x y]] [x y 1]) (line-points line))))

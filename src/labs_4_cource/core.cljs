@@ -11,7 +11,7 @@
             [labs-4-cource.toogles :refer [toggles]]
             [reagent.core :as reagent]
             [taoensso.timbre :as timbre :refer-macros [debug]]
-            [labs-4-cource.updaters]))
+            ))
 
 (enable-console-print!)
 (timbre/set-level! :debug)

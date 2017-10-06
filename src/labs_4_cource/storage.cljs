@@ -1,5 +1,5 @@
 (ns labs-4-cource.storage
-  (:require [labs-4-cource.circles :refer [->Circle]]
+  (:require [labs-4-cource.circles :refer [->Circle ->Elipse]]
             [labs-4-cource.primitives
              :refer
              [->BrezenhameLine ->SimpleLine ->SmoothLine]]
@@ -31,9 +31,9 @@
 
 (defonce sun-line-generator (reagent/atom :simple))
 
-(def lines-generators {:simple ->SimpleLine :be ->BrezenhameLine :wu ->SmoothLine :circle ->Circle})
+(def lines-generators {:simple ->SimpleLine :be ->BrezenhameLine :wu ->SmoothLine :circle ->Circle :elipse ->Elipse})
 
-(def line-types [:simple :be :wu :circle])
+(def line-types [:simple :be :wu :circle :elipse])
 
 
 (defn change-selected [value]
