@@ -1,8 +1,9 @@
 (ns ^:figwheel-always labs-4-cource.test.primitives
-  (:require [cljs.test :refer-macros [are deftest run-tests]]
+  (:require [cljs.test :refer-macros [is are deftest run-tests]]
             [labs-4-cource.first-order-lines
              :refer
-             [->SimpleLine ->BrezenhameLine ->SmoothLine calc-steps line-points]]))
+             [->BrezenhameLine ->SimpleLine calc-steps line-points]]
+            [labs-4-cource.second-order-lines :refer [length ->Circle quadrant-points]]))
 
 (comment (deftest line-from-book
      (are [src expected] (= src expected)
@@ -39,5 +40,16 @@
     [1 -1] [1 -1]
     [-1 1] [-1 1]
     [-1 -1] [-1 -1]))
+
+(deftest length-test
+  (is (= (length [0 0] [3 4]) 5)))
+
+(deftest ->Circle-test
+  (is (= (->Circle [0 0] [3 4]) {:type :circle, :center [0 0], :radius 5})))
+
+(deftest ->Circle-points
+  (is (= (quadrant-points 8) '([0 8] [1 8] [2 8] [3 7] [4 7] [5 6] [6 5] [7 4] [7 3] [8 2] [8 1] [8 0]))))
+
+(comment (cljs.test/run-tests))
 
 (cljs.test/run-tests)

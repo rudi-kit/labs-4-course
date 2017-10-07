@@ -1,5 +1,6 @@
 (ns labs-4-cource.line-examples
   (:require [clojure.core.matrix :as m]
+            [labs-4-cource.aproximation :refer [->Ermit]]
             [labs-4-cource.first-order-lines
              :refer
              [->BrezenhameLine ->SimpleLine ->SmoothLine]]
@@ -45,6 +46,8 @@
       (fn [] [(->Elipse [40 10] [50 120])])
       :elipse-2
       (fn [] [(->Elipse [10 40] [120 50])])
+      :ermit
+      (fn [] (list (->Ermit [30 30] [140 100] [130 20] [200 400])))
       }))
 
 (defonce curent-line-suplier (r/atom (first (keys @lines-supliers))))

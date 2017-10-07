@@ -1,8 +1,11 @@
 (ns labs-4-cource.storage
-  (:require [labs-4-cource.first-order-lines
+  (:require [labs-4-cource.aproximation :refer [->Bezie ->Ermit]]
+            [labs-4-cource.first-order-lines
              :refer
              [->BrezenhameLine ->SimpleLine ->SmoothLine]]
-            [labs-4-cource.second-order-lines :refer [->Circle ->Elipse ->Elipse-2]]
+            [labs-4-cource.second-order-lines
+             :refer
+             [->Circle ->Elipse ->Elipse-2 ->Hyperbola]]
             [reagent.core :as reagent]
             [taoensso.timbre :as timbre :refer-macros [spy]]))
 
@@ -31,9 +34,12 @@
                        :wu ->SmoothLine
                        :circle ->Circle
                        :elipse ->Elipse
-                       :elipse-2 ->Elipse-2})
+                       :elipse-2 ->Elipse-2
+                       :hyperbola ->Hyperbola
+                       :ermit ->Ermit
+                       :bezie ->Bezie})
 
-(def line-types [:simple :be :wu :circle :elipse :elipse-2])
+(def line-types [:simple :be :wu :circle :elipse :elipse-2 :hyperbola :ermit :bezie])
 
 (defn change-selected [value]
   (spy :info "change-selected"

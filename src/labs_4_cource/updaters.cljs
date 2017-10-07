@@ -4,9 +4,10 @@
             [labs-4-cource.debuging
              :refer
              [draw-canvas-contents! draw-line! save-debug-line!]]
+            [labs-4-cource.event-handlers :refer [on-draw-mode-change]]
             [labs-4-cource.storage
              :refer
-             [debug-state drawer height primitives scale width]]
+             [debug-state drawer height primitives scale selected width]]
             [taoensso.timbre :as timbre :refer-macros [spy]]))
 
 (defn redraw [drawer key reference old-state new-state]
@@ -35,5 +36,7 @@
     (add-watch primitives :primitives-update (partial draw-changes drawer))
 
     (add-watch debug-state :debug-state-change (partial add-to-primitives! drawer))
-
+    (add-watch selected :selected-state-change
+               (fn [reference key old-state new-state]
+                   (on-draw-mode-change new-state) ))
     )
