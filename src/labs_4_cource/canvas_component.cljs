@@ -1,10 +1,10 @@
 (ns labs-4-cource.canvas-component
   (:require [labs-4-cource.canvas :as can :refer [clean! toggle-smoothing!]]
-            [labs-4-cource.debuging :refer [add-line-from-pos]]
-            [labs-4-cource.storage
+            [labs-4-cource.event-handlers
              :refer
-             [add-pos drawer events height primitives scale width]]
-            [labs-4-cource.updaters :refer [registrate-handlers]]
+             [on-click! on-mouse-move! registrate-event-handlers]]
+            [labs-4-cource.storage :refer [drawer height primitives width]]
+            [labs-4-cource.updaters :refer [registrate-storage-handlers]]
             [reagent.core :as reagent]
             [taoensso.timbre :as log :refer [spy]]))
 
@@ -13,17 +13,6 @@
   (spy :debug "clean-canvas")
   (clean! @drawer)
   (reset! primitives nil))
-
-(defn event-pos->vector [pos]
-  [(.-x pos) (.-y pos)])
-
-(defn scale-> [[x y] scale]
-  (spy :debug [[x y] scale]
-       [(/ x scale) (/ y scale)]))
-
-(defn on-click! [event]
-  (-> @events (.getMousePos event) event-pos->vector (scale-> @scale) add-pos)
-  (add-line-from-pos))
 
 (defn div-with-canvas []
   (reagent/create-class
@@ -37,10 +26,10 @@
                         .-children
                         (aget 1))]
           (spy :info "init canvas-component")
-        (reset! events (can/canvas-events canvas1))
         (reset! drawer {:visible canvas1 :hidden canvas2})
         (toggle-smoothing! @drawer false)
-        (registrate-handlers drawer)))
+        (registrate-event-handlers drawer)
+        (registrate-storage-handlers drawer)))
 
     :reagent-render
     (fn []
@@ -48,6 +37,7 @@
        [:canvas {:id "visible"
                  :width @width
                  :onClick on-click!
+                 :onMouseMove on-mouse-move!
                  :height @height
                  :style {:border "solid 1px"}}]
        [:canvas {:id "hidden"

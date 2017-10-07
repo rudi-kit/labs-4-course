@@ -1,14 +1,14 @@
 (ns labs-4-cource.debuging
   (:require [cljs.test :refer-macros [deftest]]
             [labs-4-cource.canvas :refer [draw-pixels!]]
-            [labs-4-cource.primitives :refer [line-points]]
+            [labs-4-cource.first-order-lines :refer [line-points]]
             [labs-4-cource.storage
              :refer
              [add-primitives
               debug-state
               drawer
               lines-generators
-              next-primitive
+              new-points
               not-full-line
               primitives
               remove-debug-line!
@@ -32,12 +32,12 @@
   (reset! not-full-line {:line line :rest-points (line-points line)}))
 
 (defn add-line-from-pos []
-  (when (spy :info (= (count @next-primitive) 2))
-      (let [line (spy :info "new-line" (apply (@selected lines-generators) @next-primitive))]
+  (when (spy :info (= (count @new-points) 2))
+      (let [line (spy :info "new-line" (apply (@selected lines-generators) @new-points))]
           (if (= @debug-state :not)
               (add-primitives line)
               (add-line-to-debug! line))
-          (reset! next-primitive nil))))
+          (reset! new-points nil))))
 
 (deftest add-line-to-debug-test
   (reset! not-full-line nil)

@@ -10,7 +10,7 @@
             [taoensso.timbre :as timbre :refer-macros [spy]]))
 
 (defn redraw [drawer key reference old-state new-state]
-  (clean! @drawer)
+  (clean! drawer)
   (draw-canvas-contents!))
 
 (defn swap-images [drawer key reference old-state new-state]
@@ -28,7 +28,7 @@
        (save-debug-line!))
   )
 
-(defn registrate-handlers [drawer]
+(defn registrate-storage-handlers [drawer]
     (add-watch width :width-update (partial redraw drawer))
     (add-watch height :height-update (partial redraw drawer))
     (add-watch scale :height-update (partial swap-images drawer))

@@ -1,4 +1,4 @@
-(ns labs-4-cource.primitives
+(ns labs-4-cource.first-order-lines
   (:require [taoensso.timbre :as log :refer [get-env spy]]))
 
 (defn ->SimpleLine [p1 p2] {:type :simple :p1 p1 :p2 p2})
