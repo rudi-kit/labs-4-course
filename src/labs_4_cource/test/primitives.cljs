@@ -1,6 +1,6 @@
 (ns ^:figwheel-always labs-4-cource.test.primitives
   (:require [cljs.test :refer-macros [are deftest run-tests]]
-            [labs-4-cource.primitives
+            [labs-4-cource.first-order-lines
              :refer
              [->SimpleLine ->BrezenhameLine ->SmoothLine calc-steps line-points]]))
 

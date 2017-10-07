@@ -9,26 +9,31 @@
              [debug-state drawer height primitives scale width]]
             [taoensso.timbre :as timbre :refer-macros [spy]]))
 
-(defn redraw [key reference old-state new-state]
-  (clean! @drawer)
+(defn redraw [drawer key reference old-state new-state]
+  (clean! drawer)
   (draw-canvas-contents!))
 
-(defn swap-images [key reference old-state new-state]
+(defn swap-images [drawer key reference old-state new-state]
   (swap-hidden-to-visible! @drawer))
 
-(defn draw-changes [key reference old-state new-state]
+(defn draw-changes [drawer key reference old-state new-state]
   (let [[old new] (spy :debug "primitives changes" (diff old-state new-state))]
-      (when (= @debug-state :not)
-          (doall (for [line new] (when-not (nil? line)     (draw-line! @drawer line)))))))
+      (clean! @drawer)
+      (doall (for [line new-state] (draw-line! @drawer line)))
+      (comment (when (= @debug-state :not)
+           (doall (for [line new] (when-not (nil? line)     (draw-line! @drawer line))))))))
 
-(defn add-to-primitives! [key reference old-state new-state]
+(defn add-to-primitives! [drawer key reference old-state new-state]
     (if (= new-state :not)
        (save-debug-line!))
   )
 
-(add-watch width :width-update redraw)
-(add-watch height :height-update redraw)
-(add-watch scale :height-update swap-images)
-(add-watch primitives :primitives-update draw-changes)
+(defn registrate-storage-handlers [drawer]
+    (add-watch width :width-update (partial redraw drawer))
+    (add-watch height :height-update (partial redraw drawer))
+    (add-watch scale :height-update (partial swap-images drawer))
+    (add-watch primitives :primitives-update (partial draw-changes drawer))
 
-(add-watch debug-state :debug-state-change add-to-primitives!)
+    (add-watch debug-state :debug-state-change (partial add-to-primitives! drawer))
+
+    )

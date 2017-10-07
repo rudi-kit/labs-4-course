@@ -1,8 +1,8 @@
 (ns labs-4-cource.storage
-  (:require [labs-4-cource.circles :refer [->Circle]]
-            [labs-4-cource.primitives
+  (:require [labs-4-cource.first-order-lines
              :refer
              [->BrezenhameLine ->SimpleLine ->SmoothLine]]
+            [labs-4-cource.second-order-lines :refer [->Circle ->Elipse ->Elipse-2]]
             [reagent.core :as reagent]
             [taoensso.timbre :as timbre :refer-macros [spy]]))
 
@@ -10,7 +10,7 @@
 (defonce width (reagent/atom 640))
 (defonce height (reagent/atom 640))
 (defonce scale (reagent/atom 4))
-(defonce primitives (reagent/atom nil))
+(defonce primitives (reagent/atom '()))
 
 (defonce debug-state (reagent/atom :not))
 
@@ -18,23 +18,22 @@
   (reset! debug-state state))
 
 (defonce smoothing (reagent/atom false))
-(defonce next-primitive (atom nil))
-
-(defn add-pos [pos]
-  (swap! next-primitive (fn [old-points] (concat old-points [pos]))))
+(defonce new-points (atom nil))
 
 (defn add-primitives [line]
-  (swap! primitives (fn [old-state] (concat old-state [(spy :debug "add-primitive" line)]))))
+  (swap! primitives (fn [old-state] (conj old-state [(spy :debug "add-primitive" line)]))))
 
 (defonce events (reagent/atom nil))
 (defonce selected (reagent/atom :simple))
 
-(defonce sun-line-generator (reagent/atom :simple))
+(def lines-generators {:simple ->SimpleLine
+                       :be ->BrezenhameLine
+                       :wu ->SmoothLine
+                       :circle ->Circle
+                       :elipse ->Elipse
+                       :elipse-2 ->Elipse-2})
 
-(def lines-generators {:simple ->SimpleLine :be ->BrezenhameLine :wu ->SmoothLine :circle ->Circle})
-
-(def line-types [:simple :be :wu :circle])
-
+(def line-types [:simple :be :wu :circle :elipse :elipse-2])
 
 (defn change-selected [value]
   (spy :info "change-selected"
