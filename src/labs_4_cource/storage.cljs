@@ -1,13 +1,14 @@
 (ns labs-4-cource.storage
-  (:require [labs-4-cource.aproximation :refer [->Bezie ->Ermit]]
-            [labs-4-cource.first-order-lines
-             :refer
-             [->BrezenhameLine ->SimpleLine ->SmoothLine]]
-            [labs-4-cource.second-order-lines
-             :refer
-             [->Circle ->Elipse ->Elipse-2 ->Hyperbola]]
-            [reagent.core :as reagent]
-            [taoensso.timbre :as timbre :refer-macros [spy]]))
+    (:require [labs-4-cource.aproximation :refer [->Bezie ->Ermit]]
+              [labs-4-cource.first-order-lines
+               :refer
+               [->BrezenhameLine ->SimpleLine ->SmoothLine]]
+              [labs-4-cource.second-order-lines
+               :refer
+               [->Circle ->Elipse ->Elipse-2 ->Hyperbola]]
+              [reagent.core :as reagent]
+              [taoensso.timbre :as timbre :refer-macros [info spy]]
+              [reagent.core :as r]))
 
 (defonce drawer (reagent/atom nil))
 (defonce width (reagent/atom 640))
@@ -21,7 +22,10 @@
   (reset! debug-state state))
 
 (defonce smoothing (reagent/atom false))
+
+;;; for draw new primitives
 (defonce new-points (atom nil))
+(defonce new-primitives (atom nil))
 
 (defn add-primitives [line]
   (swap! primitives (fn [old-state] (conj old-state [(spy :debug "add-primitive" line)]))))
@@ -42,10 +46,12 @@
 (def line-types [:simple :be :wu :circle :elipse :elipse-2 :hyperbola :ermit :bezie])
 
 (defn change-selected [value]
-  (spy :info "change-selected"
-       (reset! selected value)))
+    (info "change-selected" value)
+    (reset! selected value))
 
 (defonce not-full-line (reagent/atom {:line nil :rest-points nil}))
 
 (defn remove-debug-line! []
   (reset! not-full-line nil))
+
+(defonce mode-state-machine (r/atom nil))

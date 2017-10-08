@@ -11,6 +11,7 @@ pom.xml.asc
 /resources/public/js
 /public/js/out
 /public/js/release/
+/public/js/
 /out
 /.repl
 *.log

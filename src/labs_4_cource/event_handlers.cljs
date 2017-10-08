@@ -112,7 +112,3 @@
 (defn on-mouse-move! [event]
   (finite-automata-transition {:type :move :event event}))
 
-(defn on-draw-mode-change [current-mode]
-  (if (or (= :bezie current-mode) (= :ermit current-mode))
-    (finite-automata-transition {:type :on-4-point :event current-mode})
-    (finite-automata-transition {:type :on-2-point :event current-mode})))
