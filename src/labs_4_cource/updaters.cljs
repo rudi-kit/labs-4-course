@@ -35,9 +35,13 @@
     (save-debug-line!)))
 
 (defn on-draw-mode-change [reference key old-state new-state]
-  (if (or (= :ermit new-state))
-    (push-event @mode-state-machine {:type :ermit :event new-state})
-    (push-event @mode-state-machine {:type :2-points :event new-state})))
+    (push-event @mode-state-machine
+                {:type
+                 (cond
+                     (= :ermit new-state) :ermit
+                     (= :bezie new-state) :bezie
+                     :else :2-points)
+                 :event new-state}))
 
 (comment
     (get-state @mode-state-machine))
