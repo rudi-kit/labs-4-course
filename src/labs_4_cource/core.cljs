@@ -21,7 +21,7 @@
       [:button {:onClick clean-canvas!} "clean"]
       [scale-component @scale (partial reset! scale)]
      [sun-lines-component]
-     [debug-component]
+     (comment [debug-component])
       ])
 
 (defn home []

@@ -1,6 +1,6 @@
 (ns labs-4-cource.debuging
   (:require [cljs.test :refer-macros [deftest]]
-            [labs-4-cource.canvas :refer [draw-pixels!]]
+            [labs-4-cource.canvas :refer [draw-pixels! swap-hidden-to-visible!]]
             [labs-4-cource.first-order-lines :refer [line-points]]
             [labs-4-cource.storage
              :refer
@@ -9,6 +9,7 @@
               drawer
               lines-generators
               new-points
+              new-primitives
               not-full-line
               primitives
               remove-debug-line!
@@ -45,7 +46,7 @@
   (= @not-full-line {:line {:type :wu [0 0] [5 5]}
                      :rest-points '([0 0 1] [1 1 1] [2 2 1] [3 3 1] [4 4 1] [5 5 1])}))
 
-(defmulti draw-line! (fn [canvas line]  (spy :debug (str "draw-line" line) [(:type line) @debug-state])))
+(defmulti get-line (fn [line] (spy :info (str "draw-line " line) [(:type line) @debug-state])))
 
 (derive :simple ::line)
 (derive :be     ::line)
@@ -56,9 +57,25 @@
 (derive :ermit ::line)
 (derive :bezie ::line)
 
-(defmethod draw-line! [:wu    :not] [canvas line]  (draw-pixels! canvas (line-points line)))
-(defmethod draw-line! [::line :not] [canvas line]  (draw-pixels! canvas (map (fn [[x y]] [x y 1]) (line-points line))))
-(defmethod draw-line! [::line :debug] [canvas line] (add-line-to-debug! line))
+(defmethod get-line [:wu    :not] [line]  (line-points line))
+(defmethod get-line [::line :not] [line]  (map (fn [[x y]] [x y 1]) (line-points line)))
+(defmethod get-line [::line :debug] [line] (add-line-to-debug! line))
+
 
 (defn draw-canvas-contents! []
-  (doall (map (partial draw-line! @drawer) @primitives)))
+    (let [commited @primitives
+          temp @new-primitives
+          {:keys [visible hidden extra]} @drawer]
+        (when-not (nil? commited)
+            (draw-pixels! hidden
+                          (mapcat get-line commited))
+            (swap-hidden-to-visible! visible hidden))
+        (when-not (nil? temp)
+            (draw-pixels! extra
+                          (mapcat get-line temp))
+            (swap-hidden-to-visible! visible extra)))
+  )
+
+(comment (mapcat get-line @new-primitives)
+         (mapcat   (comp pr :type) @primitives)
+         (:type {:type :simple, :p1 '(49 62.5), :p2 '(64 55)}))

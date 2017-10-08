@@ -27,6 +27,9 @@
 (defn ->Circle [p1 p2]
   {:type :circle :center (map floor p1) :radius (floor (length p1 p2))})
 
+(defn ->CircleR [r p1]
+   {:type :circle :center (map floor p1) :radius (floor r)} )
+
 (defn quadrant-points
   "get first quadrant points of circle"
   ([r] (map (fn [[x y]] [(floor x) (floor y)])

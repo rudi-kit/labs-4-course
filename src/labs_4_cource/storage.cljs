@@ -24,8 +24,8 @@
 (defonce smoothing (reagent/atom false))
 
 ;;; for draw new primitives
-(defonce new-points (atom nil))
-(defonce new-primitives (atom nil))
+(defonce new-points (atom '()))
+(defonce new-primitives (atom '()))
 
 (defn add-primitives [line]
   (swap! primitives (fn [old-state] (conj old-state [(spy :debug "add-primitive" line)]))))
@@ -54,4 +54,5 @@
 (defn remove-debug-line! []
   (reset! not-full-line nil))
 
-(defonce mode-state-machine (r/atom nil))
+(defonce mode-state-machine (atom nil))
+(defonce current-mode-state-machine (atom nil))

@@ -24,9 +24,13 @@
             canvas2 (-> this
                         reagent/dom-node
                         .-children
-                        (aget 1))]
-          (spy :info "init canvas-component")
-        (reset! drawer {:visible canvas1 :hidden canvas2})
+                        (aget 1))
+            canvas3 (-> this
+                        reagent/dom-node
+                        .-children
+                        (aget 2))]
+        (spy :info "init canvas-component")
+        (reset! drawer {:visible canvas1 :hidden canvas2 :extra canvas3})
         (toggle-smoothing! @drawer false)
         (registrate-event-handlers drawer)
         (registrate-storage-handlers drawer)))
@@ -41,6 +45,11 @@
                  :height @height
                  :style {:border "solid 1px"}}]
        [:canvas {:id "hidden"
+                 :hidden true
+                 :width @width
+                 :height @height
+                 :style {:border "solid 1px"}}]
+       [:canvas {:id "extra"
                  :hidden true
                  :width @width
                  :height @height
