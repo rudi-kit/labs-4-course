@@ -40,6 +40,7 @@
                  (cond
                      (= :ermit new-state) :ermit
                      (= :bezie new-state) :bezie
+                     (= :spline new-state) :spline
                      :else :2-points)
                  :event new-state}))
 

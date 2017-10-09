@@ -48,6 +48,9 @@
 (defn on-click! [event]
   (push-event @current-mode-state-machine {:type :click :event event}))
 
+(defn on-right-click! [event]
+  (push-event @current-mode-state-machine {:type :right-click :event event}))
+
 (defn on-mouse-move! [event]
   (push-event @current-mode-state-machine {:type :move :event event}))
 

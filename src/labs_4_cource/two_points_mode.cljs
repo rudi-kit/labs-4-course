@@ -22,12 +22,12 @@
     (reset! new-primitives nil))
 
 (def two-points-transition-table
-  {:empty {:click :half :move :empty}
-   :half {:click :empty :move :half}})
+  {:empty {:click :half :move :empty :right-click :empty}
+   :half {:click :empty :move :half :right-click :half}})
 
 (def two-points-action-table
-  {:empty {:click submit-first-point :move noop}
-   :half {:click submit-full-primitive :move change-second-point}})
+  {:empty {:click submit-first-point :move noop :right-click noop}
+   :half {:click submit-full-primitive :move change-second-point :right-click noop}})
 
 (defn ->2PointMode []
   (let [state (atom :empty)]

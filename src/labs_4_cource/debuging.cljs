@@ -56,6 +56,7 @@
 (derive :hyperbola ::line)
 (derive :ermit ::line)
 (derive :bezie ::line)
+(derive :spline ::line)
 
 (defmethod get-line [:wu    :not] [line]  (line-points line))
 (defmethod get-line [::line :not] [line]  (map (fn [[x y]] [x y 1]) (line-points line)))
