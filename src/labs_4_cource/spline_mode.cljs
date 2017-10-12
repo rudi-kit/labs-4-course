@@ -1,7 +1,7 @@
 (ns labs-4-cource.spline-mode
   (:require [labs-4-cource.event-handlers
              :refer
-             [event-pos generate-current-line push]]
+             [event-pos generate-current-line ]]
             [labs-4-cource.first-order-lines :refer [->SimpleLine]]
             [labs-4-cource.second-order-lines :refer [->CircleR]]
             [labs-4-cource.state-mashines :refer [->StateMachine noop]]
@@ -21,7 +21,7 @@
 (defn add-point [event]
   (let [pos (event-pos event)]
     (spy :info "add-point" pos)
-    (swap! new-points (partial push pos))
+    (swap! new-points conj pos)
     (reset! new-primitives (spline-support))))
 
 (defn set-last-point [event]
@@ -33,7 +33,7 @@
 (defn submit [event]
   (spy :info "submit")
   (.preventDefault event)
-  (swap! primitives (generate-current-line))
+  (swap! primitives conj (generate-current-line))
   )
 
 (def ermit-transition-table

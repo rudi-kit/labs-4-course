@@ -9,11 +9,12 @@
             [taoensso.timbre :as log :refer [spy]]
             [labs-4-cource.event-handlers :refer [on-right-click!]]))
 
-(defn clean-canvas! []
-  "event handler of button clean canvas"
-  (spy :debug "clean-canvas")
-  (clean! @drawer)
-  (reset! primitives nil))
+(defn clean-canvas!
+    "event handler of button clean canvas"
+    []
+    (spy :debug "clean-canvas")
+    (clean! @drawer)
+    (reset! primitives nil))
 
 (defn div-with-canvas []
   (reagent/create-class

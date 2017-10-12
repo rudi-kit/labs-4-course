@@ -1,7 +1,7 @@
 (ns labs-4-cource.bezie-mode
     (:require [labs-4-cource.event-handlers
              :refer
-             [event-pos generate-current-line push]]
+             [event-pos generate-current-line ]]
             [labs-4-cource.first-order-lines :refer [->SimpleLine]]
             [labs-4-cource.second-order-lines :refer [->CircleR]]
             [labs-4-cource.state-mashines :refer [->StateMachine noop]]
@@ -12,7 +12,7 @@
     (spy :info [p1 p2 p3 p4])
     (into '()
           (concat
-           (list (generate-current-line)
+           (array (generate-current-line)
 
                  (->SimpleLine p1 p2)
                  (->SimpleLine p3 p4))
@@ -21,22 +21,22 @@
 (defn set-point [i event]
   (let [pos (event-pos event)]
     (spy :debug (cond (= 0 i)
-                      (swap! new-points (fn [[p1 p2 p3 p4]] (list pos pos p3 p4)))
+                      (swap! new-points (fn [[p1 p2 p3 p4]] (array pos pos p3 p4)))
                       (= 1 i)
-                      (swap! new-points (fn [[p1 p2 p3 p4]] (list p1 pos p3 pos)))
+                      (swap! new-points (fn [[p1 p2 p3 p4]] (array p1 pos p3 pos)))
                       (= 2 i)
-                      (swap! new-points (fn [[p1 p2 p3 p4]] (list p1 pos p3 p4)))
+                      (swap! new-points (fn [[p1 p2 p3 p4]] (array p1 pos p3 p4)))
                       (= 3 i)
-                      (swap! new-points (fn [[p1 p2 p3 p4]] (list p1 p2 pos p4)))))
+                      (swap! new-points (fn [[p1 p2 p3 p4]] (array p1 p2 pos p4)))))
     (reset! new-primitives (ermit-form-support @new-points))))
 
 (defn append-4-point-primitive [event]
   (let [pos (event-pos event)]
-    (reset! new-points (list pos pos pos pos))
-    (reset! new-primitives (list (generate-current-line)))))
+    (reset! new-points (array pos pos pos pos))
+    (reset! new-primitives (array (generate-current-line)))))
 
 (defn submit-full-primitive [event]
-  (swap! primitives (partial push (generate-current-line)))
+  (swap! primitives conj (generate-current-line))
   (reset! new-points nil)
   (reset! new-primitives nil))
 

@@ -13,10 +13,11 @@
 (defn toggle-smoothing!
   "set smoothing value of canvas context.
      use all known browser prefixes"
-  [{:keys [visible hidden]} flag]
+  [{:keys [visible hidden extra]} flag]
   (debug "toggle smothing " flag)
   (toggle-smoothing (get-ctx visible) flag)
-  (toggle-smoothing (get-ctx hidden) flag))
+  (toggle-smoothing (get-ctx hidden) flag)
+  (toggle-smoothing (get-ctx extra) flag))
 
 (defn rgba "collect css rgba string" [[r g b a]] (str "rgba(" r "," g "," b "," a ")"))
 
@@ -28,7 +29,7 @@
     (set! (.-fillStyle ctx) (rgba [0 0 0 e]))
     (.fillRect ctx x y 1 1)))
 
-(defn swap-hidden-to-visible! [ visible hidden]
+(defn swap-hidden-to-visible! [visible hidden]
   (.drawImage (get-ctx visible) hidden 0 0 (/ @width @scale) (/ @height @scale) 0 0 @width @height))
 
 (defn draw-pixels!
@@ -36,12 +37,15 @@
   ([canvas points]
    (doall (map (partial draw-pixel! canvas) points))))
 
+(defn clean-canvas! [canvas]
+  (.clearRect (get-ctx canvas) 0 0 @width @height))
+
 (defn clean!
   "clean pair of canvases"
   [{:keys [visible hidden extra]}]
-  (.clearRect (get-ctx visible) 0 0 @width @height)
-  (.clearRect (get-ctx hidden) 0 0 @width @height)
-  (.clearRect (get-ctx extra) 0 0 @width @height))
+  (clean-canvas! visible)
+  (clean-canvas! hidden)
+  (clean-canvas! extra))
 
 (defn set-scale! [canvas scale]
   (.scale (get-ctx (:visible canvas)) scale scale))

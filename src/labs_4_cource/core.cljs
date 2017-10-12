@@ -1,13 +1,12 @@
 (ns labs-4-cource.core
-  (:require [labs-4-cource.canvas :refer [clean!]]
-            [labs-4-cource.canvas-component :refer [clean-canvas! div-with-canvas]]
+  (:require [labs-4-cource.canvas-component :refer [clean-canvas! div-with-canvas]]
             [labs-4-cource.debug-component :refer [debug-component]]
             [labs-4-cource.debuging :refer [draw-canvas-contents!]]
             [labs-4-cource.line-examples :refer [sun-lines-component]]
             [labs-4-cource.scale-component :refer [scale-component]]
             [labs-4-cource.storage
              :refer
-             [change-selected drawer line-types scale selected]]
+             [change-selected line-types new-primitives primitives scale selected]]
             [labs-4-cource.toogles :refer [toggles]]
             [reagent.core :as reagent]
             [taoensso.timbre :as timbre :refer-macros [debug]]))
@@ -36,5 +35,5 @@
     (reagent/render [home]
                     (.getElementById js/document "app"))
 
-    (draw-canvas-contents!)
+    (draw-canvas-contents! @primitives @new-primitives)
     )

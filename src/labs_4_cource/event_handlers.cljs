@@ -32,10 +32,7 @@
   (scale-> (event-pos->vector (.getMousePos @events event)) @scale))
 
 (defn generate-current-line []
-  (spy :info (apply (@selected lines-generators) @new-points)))
-
-(defn push [element col]
-    (conj col element))
+  (spy :debug (apply (@selected lines-generators) @new-points)))
 
 (defonce points-mode
   ^"determine how many points are used to build primitive"

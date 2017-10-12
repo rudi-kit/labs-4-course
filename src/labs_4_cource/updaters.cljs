@@ -21,43 +21,52 @@
 
 (defn redraw [drawer key reference old-state new-state]
   (clean! drawer)
-  (draw-canvas-contents!))
+  (draw-canvas-contents! @primitives @new-primitives))
 
 (defn swap-images [{:keys [visible hidden extra]} key reference old-state new-state]
   (swap-hidden-to-visible! visible hidden))
 
-(defn draw-changes [drawer key reference old-state new-state]
-    (clean! @drawer)
-    (draw-canvas-contents!))
+(defn draw-changes-permanent [key reference old-state new-state]
+    (:pre (array? new-state))
+    (spy :info new-state)
+    (spy :info old-state)
+  (draw-canvas-contents!
+   (filter (comp not nil?) (second (spy :info (diff old-state new-state))))
+   nil))
 
-(defn add-to-primitives! [drawer key reference old-state new-state]
+(defn draw-changes-temp [key reference old-state new-state]
+  (draw-canvas-contents!
+   nil
+   new-state))
+
+(defn add-to-primitives! [key reference old-state new-state]
   (if (= new-state :not)
     (save-debug-line!)))
 
 (defn on-draw-mode-change [reference key old-state new-state]
-    (push-event @mode-state-machine
-                {:type
-                 (cond
-                     (= :ermit new-state) :ermit
-                     (= :bezie new-state) :bezie
-                     (= :spline new-state) :spline
-                     :else :2-points)
-                 :event new-state}))
+  (push-event @mode-state-machine
+              {:type
+               (cond
+                 (= :ermit new-state) :ermit
+                 (= :bezie new-state) :bezie
+                 (= :spline new-state) :spline
+                 :else :2-points)
+               :event new-state}))
 
 (comment
-    (get-state @mode-state-machine))
+  (get-state @mode-state-machine))
 
 (defn log [& args] (debug args))
 
 (defn registrate-storage-handlers [drawer]
-  (add-watch width :width-update (partial redraw drawer))
-  (add-watch height :height-update (partial redraw drawer))
-  (add-watch scale :height-update (partial swap-images drawer))
-  (add-watch primitives :primitives-update (partial draw-changes drawer))
-  (add-watch new-primitives :new-primitives-update (partial draw-changes drawer))
+  (add-watch width :width-update redraw)
+  (add-watch height :height-update redraw)
+  (add-watch scale :height-update swap-images)
+  (add-watch primitives :primitives-update draw-changes-permanent)
+  (add-watch new-primitives :new-primitives-update draw-changes-temp)
 
   (add-watch current-mode-state-machine :current-mode-state-machine log)
-  (add-watch debug-state :debug-state-change (partial add-to-primitives! drawer))
+  (add-watch debug-state :debug-state-change add-to-primitives!)
   (add-watch selected :selected-state-change on-draw-mode-change)
-    (reset! mode-state-machine (->ModesMashine))
-    (reset! current-mode-state-machine (->2PointMode)))
+  (reset! mode-state-machine (->ModesMashine))
+  (reset! current-mode-state-machine (->2PointMode)))

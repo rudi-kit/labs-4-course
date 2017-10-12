@@ -1,23 +1,23 @@
 (ns labs-4-cource.two-points-mode
   (:require [labs-4-cource.event-handlers
              :refer
-             [event-pos generate-current-line push]]
+             [event-pos generate-current-line ]]
             [labs-4-cource.state-mashines :refer [->StateMachine noop]]
             [labs-4-cource.storage :refer [new-points new-primitives primitives]]
             [taoensso.timbre :as log :refer [spy]]))
 
 (defn change-second-point [event]
   (let [pos (event-pos event)]
-        (swap! new-points (fn [[p1 p2]] (spy :info "new-points" [p1 pos])))
-        (reset! new-primitives (list (generate-current-line)))))
+        (swap! new-points (fn [[p1 p2]] (spy :debug "new-points" [p1 pos])))
+        (reset! new-primitives [(generate-current-line)])))
 
 (defn submit-first-point [event]
     (let [pos (event-pos event)]
-        (swap! new-points (fn [[p1 p2]] (spy :info "new-points" [pos pos])))
-        (reset! new-primitives (list (generate-current-line)))))
+        (swap! new-points (fn [[p1 p2]] (spy :debug "new-points" [pos pos])))
+        (reset! new-primitives [(generate-current-line)])))
 
 (defn submit-full-primitive [event]
-  (swap! primitives (partial push (generate-current-line)))
+  (swap! primitives conj (generate-current-line))
     (reset! new-points nil)
     (reset! new-primitives nil))
 

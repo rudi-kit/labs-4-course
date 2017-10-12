@@ -13,7 +13,7 @@
 (defonce width (reagent/atom 640))
 (defonce height (reagent/atom 640))
 (defonce scale (reagent/atom 4))
-(defonce primitives (reagent/atom '()))
+(defonce primitives (reagent/atom []))
 
 (defonce debug-state (reagent/atom :not))
 

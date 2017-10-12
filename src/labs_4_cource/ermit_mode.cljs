@@ -1,7 +1,7 @@
 (ns labs-4-cource.ermit-mode
   (:require [labs-4-cource.event-handlers
              :refer
-             [event-pos generate-current-line push]]
+             [event-pos generate-current-line ]]
             [labs-4-cource.first-order-lines :refer [->SimpleLine]]
             [labs-4-cource.second-order-lines :refer [->CircleR]]
             [labs-4-cource.state-mashines :refer [->StateMachine noop]]
@@ -35,11 +35,11 @@
 
 (defn append-4-point-primitive [event]
   (let [pos (event-pos event)]
-    (reset! new-points (list pos pos pos pos))
-    (reset! new-primitives (list (generate-current-line)))))
+    (reset! new-points (array pos pos pos pos))
+    (reset! new-primitives (array (generate-current-line)))))
 
 (defn submit-full-primitive [event]
-  (swap! primitives (partial push (generate-current-line)))
+  (swap! primitives conj (generate-current-line))
   (reset! new-points nil)
   (reset! new-primitives nil))
 
