@@ -3,6 +3,7 @@
             [labs-4-cource.first-order-lines
              :refer
              [->BrezenhameLine ->SimpleLine ->SmoothLine]]
+            [labs-4-cource.point-line-figure :refer [->CarcasFigure]]
             [labs-4-cource.second-order-lines
              :refer
              [->Circle ->Elipse ->Elipse-2 ->Hyperbola]]
@@ -41,7 +42,8 @@
                        :hyperbola ->Hyperbola
                        :ermit ->Ermit
                        :bezie ->Bezie
-                       :spline ->Spline})
+                       :spline ->Spline
+                       :carcas ->CarcasFigure})
 
 (def line-types [:simple :be :wu :circle :elipse :elipse-2 :hyperbola :ermit :bezie :spline])
 

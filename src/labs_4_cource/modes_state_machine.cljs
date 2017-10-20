@@ -20,8 +20,14 @@
             (= :spline event) (->SplineMode)
             :else (->2PointMode))))
 
+(defn create-modes-transntiotion-table []
+  (let [states [:2-points :ermit :bezie :spline]
+        table-row (into {} (map (fn [x] [x x]) states) )]
+    (into {} (map (fn [x] [x table-row]) states)))
+  )
+
 (def modes-transition-table
-  {:2-points {:2-points :ermit :ermit :ermit :bezie :bezie :spline :spline}
+  {:2-points {:2-points :2-points :ermit :ermit :bezie :bezie :spline :spline}
    :ermit {:2-points :2-points :ermit :ermit :bezie :bezie :spline :spline}
    :bezie {:2-points :2-points :ermit :ermit :bezie :bezie :spline :spline}
    :spline {:2-points :2-points :ermit :ermit :bezie :bezie :spline :spline}})

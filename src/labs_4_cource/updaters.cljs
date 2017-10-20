@@ -19,12 +19,8 @@
             [labs-4-cource.two-points-mode :refer [->2PointMode]]
             [taoensso.timbre :as timbre :refer-macros [info debug spy]]))
 
-(defn redraw [drawer key reference old-state new-state]
-  (clean! drawer)
+(defn redraw [key reference old-state new-state]
   (draw-canvas-contents! @primitives @new-primitives))
-
-(defn swap-images [{:keys [visible hidden extra]} key reference old-state new-state]
-  (swap-hidden-to-visible! visible hidden))
 
 (defn draw-changes-permanent [key reference old-state new-state]
     (:pre (array? new-state))
@@ -43,7 +39,7 @@
   (if (= new-state :not)
     (save-debug-line!)))
 
-(defn on-draw-mode-change [reference key old-state new-state]
+(defn on-draw-mode-change [key reference old-state new-state]
   (push-event @mode-state-machine
               {:type
                (cond
@@ -61,7 +57,7 @@
 (defn registrate-storage-handlers [drawer]
   (add-watch width :width-update redraw)
   (add-watch height :height-update redraw)
-  (add-watch scale :height-update swap-images)
+  (add-watch scale :height-update redraw)
   (add-watch primitives :primitives-update draw-changes-permanent)
   (add-watch new-primitives :new-primitives-update draw-changes-temp)
 
