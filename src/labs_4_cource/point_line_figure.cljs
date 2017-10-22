@@ -29,6 +29,6 @@
               (mapv
                (partial
                 mapv (fn [p](nth points p))) lines))]
-    (into [] (map (partial apply ->BrezenhameLine) lines-with-substituted-points))))
+    (mapcat line-points (into [] (map (partial apply ->BrezenhameLine) lines-with-substituted-points)))))
 
 (line-points (->CarcasFigure {:points [[0 0 0] [1 1 1] [2 2 2]] :lines [[0 1] [1 1] [0 2]]}))

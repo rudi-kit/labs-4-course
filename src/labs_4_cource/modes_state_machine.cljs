@@ -20,23 +20,21 @@
             (= :spline event) (->SplineMode)
             :else (->2PointMode))))
 
+(def states [:2-points :ermit :bezie :spline])
+
 (defn create-modes-transntiotion-table []
-  (let [states [:2-points :ermit :bezie :spline]
-        table-row (into {} (map (fn [x] [x x]) states) )]
-    (into {} (map (fn [x] [x table-row]) states)))
-  )
+  (let [states states
+        table-row (into {} (map (fn [x] [x x]) states))]
+    (into {} (map (fn [x] [x table-row]) states))))
 
-(def modes-transition-table
-  {:2-points {:2-points :2-points :ermit :ermit :bezie :bezie :spline :spline}
-   :ermit {:2-points :2-points :ermit :ermit :bezie :bezie :spline :spline}
-   :bezie {:2-points :2-points :ermit :ermit :bezie :bezie :spline :spline}
-   :spline {:2-points :2-points :ermit :ermit :bezie :bezie :spline :spline}})
+(defn create-modes-action-table []
+  (let [states states
+        table-row (into {} (map (fn [x] [x (list 'partial 'change-state x)]) states))]
+    (into {} (map (fn [x] [x table-row]) states))))
 
-(def modes-action-table
-  {:2-points {:2-points (partial change-state :2-points) :ermit (partial change-state :ermit) :bezie (partial change-state :bezie) :spline (partial change-state :spline)}
-   :ermit {:2-points (partial change-state :2-points) :ermit (partial change-state :ermit) :bezie (partial change-state :bezie) :spline (partial change-state :spline)}
-   :bezie {:2-points (partial change-state :2-points) :ermit (partial change-state :ermit) :bezie (partial change-state :bezie) :spline (partial change-state :spline)}
-   :spline {:2-points (partial change-state :2-points) :ermit (partial change-state :ermit) :bezie (partial change-state :bezie) :spline (partial change-state :spline)}})
+(def modes-transition-table (create-modes-action-table))
+
+(def modes-action-table (create-modes-action-table))
 
 (defn ->ModesMashine []
   (let [state (atom :2-points)]

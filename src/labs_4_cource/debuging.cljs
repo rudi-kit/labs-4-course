@@ -61,8 +61,7 @@
 (derive :spline ::line)
 
 (defmethod get-line [:wu    :not] [line]  (line-points line))
-(defmethod get-line [::line :not] [line]  (map (fn [[x y]] [x y 1]) (line-points line)))
-(defmethod get-line [::line :debug] [line] (add-line-to-debug! line))
+  (defmethod get-line :default [line]  (map (fn [[x y]] [x y 1]) (line-points line)))
 
 (defn draw-permanent-content [{:keys [hidden visible]} lines]
   (draw-pixels! hidden
