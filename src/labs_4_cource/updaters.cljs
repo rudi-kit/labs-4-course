@@ -46,6 +46,7 @@
                  (= :ermit new-state) :ermit
                  (= :bezie new-state) :bezie
                  (= :spline new-state) :spline
+                 (= :carcas new-state) :carcas
                  :else :2-points)
                :event new-state}))
 
