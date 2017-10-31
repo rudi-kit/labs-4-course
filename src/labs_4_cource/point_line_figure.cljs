@@ -23,7 +23,6 @@
   (assoc carcas :type :carcas))
 
 (defmethod line-points :carcas [{:keys [points lines]}]
-  (pr points)
   (let [lines-with-substituted-points
         (into []
               (mapv

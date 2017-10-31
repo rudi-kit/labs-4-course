@@ -1,9 +1,11 @@
 (ns labs-4-cource.components.tool-panel-component
-  (:require [labs-4-cource.canvas :refer [clean!]]
+  (:require [cljs.tools.reader.edn :refer [read-string]]
+            [labs-4-cource.canvas :refer [clean!]]
             [labs-4-cource.debug-component :refer [debug-component]]
             [labs-4-cource.line-examples :refer [sun-lines-component]]
             [labs-4-cource.reagent-helpers :refer [get-value]]
             [labs-4-cource.scale-component :refer [scale-component]]
+            [labs-4-cource.state-mashines :refer [push-event]]
             [labs-4-cource.storage
              :refer
              [carcas-files
@@ -19,7 +21,7 @@
 (defn push-carcas-figure-content
   [[file-name content :as file]]
     (swap! carcas-files conj file)
-    (push-event @current-mode-state-machine {:type :file :event content}))
+    (push-event @current-mode-state-machine {:type :file :event (read-string content)}))
 
 (defn read-file
   "callback on input[type=file] onChange to getFiles and read it"
