@@ -58,4 +58,4 @@
 (defn  registrate-event-handlers [drawer]
   (.addEventListener js/window "keydown" on-key-down!)
   (reset! events (canvas-events (:visible @drawer)))
-  (js/setInterval main-loop))
+  (js/setInterval main-loop (/ 1000 120)))

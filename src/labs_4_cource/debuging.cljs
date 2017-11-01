@@ -68,7 +68,7 @@
                 (mapcat get-line lines))
   (assoc drawer :perm-changed true))
 
-(defn draw-temporaly-content [{:keys [extra visible]} lines]
+(defn draw-temporaly-content [{:keys [extra visible] :as drawer} lines]
   (clean-canvas! extra)
   (draw-pixels! extra
                 (mapcat get-line lines))
@@ -83,10 +83,12 @@
       (swap! drawer draw-permanent-content permanent-change))))
 
 (defn draw-visible-content
-  [{:keys [visible hidden extra perm-changed temp-changed] :as drawer}]
-  (when perm-changed (swap-hidden-to-visible! visible hidden))
-  (when temp-changed (swap-hidden-to-visible! visible temp-changed))
-  (assoc drawer :perm-changed nil :temp-changed nil))
+    [{:keys [visible hidden extra perm-changed temp-changed] :as drawer}]
+    {:pre [(not (nil? visible))]}
+    (when (or temp-changed perm-changed) (clean-canvas! visible))
+    (when perm-changed (swap-hidden-to-visible! visible hidden))
+    (when temp-changed (swap-hidden-to-visible! visible extra))
+    (assoc drawer :perm-changed nil :temp-changed nil))
 
 (comment (mapcat get-line @new-primitives)
          (mapcat   (comp pr :type) @primitives)
