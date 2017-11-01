@@ -61,29 +61,32 @@
 (derive :spline ::line)
 
 (defmethod get-line [:wu    :not] [line]  (line-points line))
-  (defmethod get-line :default [line]  (map (fn [[x y]] [x y 1]) (line-points line)))
+(defmethod get-line :default [line]  (map (fn [[x y]] [x y 1]) (line-points line)))
 
-(defn draw-permanent-content [{:keys [hidden visible]} lines]
+(defn draw-permanent-content [{:keys [hidden visible] :as drawer} lines]
   (draw-pixels! hidden
-                (mapcat get-line lines)))
+                (mapcat get-line lines))
+  (assoc drawer :perm-changed true))
 
 (defn draw-temporaly-content [{:keys [extra visible]} lines]
   (clean-canvas! extra)
   (draw-pixels! extra
-                (mapcat get-line lines)))
+                (mapcat get-line lines))
+  (assoc drawer :temp-changed true))
 
 (defn draw-canvas-contents!
   [permanent-change temporary]
   (let [{:keys [visible hidden extra]} @drawer]
     (clean-canvas! extra)
-    (clean-canvas! visible)
-    (draw-temporaly-content @drawer temporary)
-    (swap-hidden-to-visible! visible extra)
-    (when (nil? permanent-change)
-      (swap-hidden-to-visible! visible hidden))
+    (swap! drawer draw-temporaly-content temporary)
     (when-not (nil? permanent-change)
-      (draw-permanent-content @drawer permanent-change)
-      (swap-hidden-to-visible! visible hidden))))
+      (swap! drawer draw-permanent-content permanent-change))))
+
+(defn draw-visible-content
+  [{:keys [visible hidden extra perm-changed temp-changed] :as drawer}]
+  (when perm-changed (swap-hidden-to-visible! visible hidden))
+  (when temp-changed (swap-hidden-to-visible! visible temp-changed))
+  (assoc drawer :perm-changed nil :temp-changed nil))
 
 (comment (mapcat get-line @new-primitives)
          (mapcat   (comp pr :type) @primitives)

@@ -3,6 +3,7 @@
             [labs-4-cource.canvas :refer [clean!]]
             [labs-4-cource.debug-component :refer [debug-component]]
             [labs-4-cource.line-examples :refer [sun-lines-component]]
+            [labs-4-cource.point-line-figure :refer [->CarcasFigure]]
             [labs-4-cource.reagent-helpers :refer [get-value]]
             [labs-4-cource.scale-component :refer [scale-component]]
             [labs-4-cource.state-mashines :refer [push-event]]
@@ -19,9 +20,17 @@
             [labs-4-cource.toogles :refer [toggles]]))
 
 (defn push-carcas-figure-content
+    "get content from file, save it and push it to editor"
   [[file-name content :as file]]
-    (swap! carcas-files conj file)
-    (push-event @current-mode-state-machine {:type :file :event (read-string content)}))
+    (let [carcas (->CarcasFigure (read-string content))]
+        (swap! carcas-files conj [file-name carcas])
+        (push-event @current-mode-state-machine {:type :file :event carcas})))
+
+(defn push-last-figure
+    "get last opened file and push it to editor"
+    []
+    (push-event @current-mode-state-machine {:type :file :event (second (first @carcas-files))}))
+
 
 (defn read-file
   "callback on input[type=file] onChange to getFiles and read it"
@@ -45,11 +54,6 @@
    [:input {:id file-idtf
             :type :file
             :onChange (partial read-file push-carcas-figure-content)}]])
-
-(defn push-last-figure
-    "get last opened file and push it to editor"
-    []
-    (push-event @current-mode-state-machine {:type :file :event (first @carcas-files)}))
 
 (defn carcas-control-component
   []

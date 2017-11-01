@@ -1,25 +1,23 @@
 (ns labs-4-cource.event-handlers
   (:require [canvas.events :as evt]
+            [labs-4-cource.debuging :refer [draw-visible-content]]
             [labs-4-cource.state-mashines :refer [push-event]]
             [labs-4-cource.storage
              :refer
              [current-mode-state-machine
+              drawer
               events
               lines-generators
               new-points
-              primitives
               scale
               selected]]
             [reagent.core :as r]
-            [taoensso.timbre :as log :refer [debug spy]]))
+            [taoensso.timbre :as log :refer [spy]]))
 
 (defn canvas-events "create js object wich tracks mouse position"
   [canvas] (let [events (new evt/events canvas)]
              (.listen events)
              events))
-
-(defn  registrate-event-handlers [drawer]
-  (reset! events (canvas-events (:visible @drawer))))
 
 (defn event-pos->vector [pos]
   [(.-x pos) (.-y pos)])
@@ -51,3 +49,13 @@
 (defn on-mouse-move! [event]
   (push-event @current-mode-state-machine {:type :move :event event}))
 
+(defn on-key-down! [event]
+  (push-event @current-mode-state-machine {:type :keyboard :event event}))
+
+(defn main-loop []
+  (swap! drawer draw-visible-content))
+
+(defn  registrate-event-handlers [drawer]
+  (.addEventListener js/window "keydown" on-key-down!)
+  (reset! events (canvas-events (:visible @drawer)))
+  (js/setInterval main-loop))

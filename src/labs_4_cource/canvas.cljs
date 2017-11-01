@@ -2,7 +2,10 @@
   (:require [labs-4-cource.storage :refer [height scale width]]
             [taoensso.timbre :as log :refer [debug spy]]))
 
-(defn get-ctx "get 2d context of canvas" [canvas] (.getContext canvas "2d"))
+(def get-ctx
+    ^{:doc "get 2d context of canvas"}
+    (memoize
+     (fn [canvas] (.getContext canvas "2d"))))
 
 (defn- toggle-smoothing [ctx flag]
   (spy :debug (aset ctx "imageSmoothingEnabled" flag))

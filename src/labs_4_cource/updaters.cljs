@@ -1,7 +1,7 @@
 (ns labs-4-cource.updaters
   (:require [clojure.data :refer [diff]]
-            [labs-4-cource.canvas :refer [clean! swap-hidden-to-visible!]]
             [labs-4-cource.debuging :refer [draw-canvas-contents! save-debug-line!]]
+            [labs-4-cource.event-handlers :refer [on-key-down!]]
             [labs-4-cource.modes-state-machine :refer [->ModesMashine]]
             [labs-4-cource.state-mashines :refer [get-state push-event]]
             [labs-4-cource.storage
@@ -17,15 +17,15 @@
               selected
               width]]
             [labs-4-cource.two-points-mode :refer [->2PointMode]]
-            [taoensso.timbre :as timbre :refer-macros [info debug spy]]))
+            [taoensso.timbre :as timbre :refer-macros [debug spy]]))
 
 (defn redraw [key reference old-state new-state]
   (draw-canvas-contents! @primitives @new-primitives))
 
 (defn draw-changes-permanent [key reference old-state new-state]
-    (:pre (array? new-state))
-    (spy :info new-state)
-    (spy :info old-state)
+  (:pre (array? new-state))
+  (spy :info new-state)
+  (spy :info old-state)
   (draw-canvas-contents!
    (filter (comp not nil?) (second (spy :info (diff old-state new-state))))
    nil))
@@ -55,6 +55,11 @@
 
 (defn log [& args] (debug args))
 
+(defn set-if-not-exists [new-value old-value]
+  (if (nil? old-value)
+    new-value
+    old-value))
+
 (defn registrate-storage-handlers [drawer]
   (add-watch width :width-update redraw)
   (add-watch height :height-update redraw)
@@ -65,5 +70,6 @@
   (add-watch current-mode-state-machine :current-mode-state-machine log)
   (add-watch debug-state :debug-state-change add-to-primitives!)
   (add-watch selected :selected-state-change on-draw-mode-change)
-  (reset! mode-state-machine (->ModesMashine))
-  (reset! current-mode-state-machine (->2PointMode)))
+  (swap! mode-state-machine (partial set-if-not-exists (->ModesMashine)))
+  (swap! current-mode-state-machine (partial set-if-not-exists (->2PointMode)))
+  )

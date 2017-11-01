@@ -7,7 +7,7 @@
             [taoensso.timbre :as timbre :refer-macros [debug]]))
 
 (enable-console-print!)
-(timbre/set-level! :debug)
+(timbre/set-level! :info)
 
 (defn home []
     (debug "home")
