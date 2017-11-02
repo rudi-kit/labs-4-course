@@ -12,7 +12,7 @@
 (defn clean-canvas!
     "event handler of button clean canvas"
     []
-    (spy :debug "clean-canvas")
+    (spy :info "clean-canvas")
     (clean! @drawer)
     (reset! primitives nil))
 

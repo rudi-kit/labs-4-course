@@ -1,6 +1,6 @@
 (ns labs-4-cource.components.tool-panel-component
   (:require [cljs.tools.reader.edn :refer [read-string]]
-            [labs-4-cource.canvas :refer [clean!]]
+            [labs-4-cource.canvas-component :refer [clean-canvas!]]
             [labs-4-cource.debug-component :refer [debug-component]]
             [labs-4-cource.line-examples :refer [sun-lines-component]]
             [labs-4-cource.point-line-figure :refer [->CarcasFigure]]
@@ -76,7 +76,7 @@
 (defn tool-panel []
   [:div.tool-panel
    [toggles selected  line-types change-selected]
-   [:button {:onClick (partial clean! @drawer)} "clean"]
+   [:button {:onClick (partial clean-canvas! @drawer)} "clean"]
    [scale-component @scale (partial reset! scale)]
    (comment [debug-component])
    (if (= :carcas @selected)

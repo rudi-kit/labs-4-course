@@ -65,30 +65,28 @@
 
 (defn draw-permanent-content [{:keys [hidden visible] :as drawer} lines]
   (draw-pixels! hidden
-                (mapcat get-line lines))
-  (assoc drawer :perm-changed true))
+                (mapcat get-line lines)))
 
 (defn draw-temporaly-content [{:keys [extra visible] :as drawer} lines]
   (clean-canvas! extra)
   (draw-pixels! extra
-                (mapcat get-line lines))
-  (assoc drawer :temp-changed true))
+                (mapcat get-line lines)))
 
 (defn draw-canvas-contents!
   [permanent-change temporary]
-  (let [{:keys [visible hidden extra]} @drawer]
-    (clean-canvas! extra)
-    (swap! drawer draw-temporaly-content temporary)
-    (when-not (nil? permanent-change)
-      (swap! drawer draw-permanent-content permanent-change))))
+  (swap! drawer assoc :perm-changed (not permanent-change) :temp-changed (not (nil? temporary))))
 
 (defn draw-visible-content
-    [{:keys [visible hidden extra perm-changed temp-changed] :as drawer}]
-    {:pre [(not (nil? visible))]}
-    (when (or temp-changed perm-changed) (clean-canvas! visible))
-    (when perm-changed (swap-hidden-to-visible! visible hidden))
-    (when temp-changed (swap-hidden-to-visible! visible extra))
-    (assoc drawer :perm-changed nil :temp-changed nil))
+  [{:keys [visible hidden extra perm-changed temp-changed] :as drawer}]
+  {:pre [(not (nil? visible))]}
+  (when (or temp-changed perm-changed) (clean-canvas! visible))
+  (when perm-changed
+    (draw-permanent-content drawer @primitives)
+    (swap-hidden-to-visible! visible hidden))
+  (when temp-changed
+    (draw-temporaly-content drawer @new-primitives)
+    (swap-hidden-to-visible! visible extra))
+  (assoc drawer :perm-changed nil :temp-changed nil))
 
 (comment (mapcat get-line @new-primitives)
          (mapcat   (comp pr :type) @primitives)
