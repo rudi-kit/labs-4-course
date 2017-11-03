@@ -10,11 +10,11 @@
             [labs-4-cource.event-handlers :refer [on-right-click!]]))
 
 (defn clean-canvas!
-    "event handler of button clean canvas"
-    []
-    (spy :info "clean-canvas")
-    (clean! @drawer)
-    (reset! primitives nil))
+  "event handler of button clean canvas"
+  []
+  (spy :info "clean-canvas")
+  (clean! @drawer)
+  (reset! primitives nil))
 
 (defn div-with-canvas []
   (reagent/create-class
