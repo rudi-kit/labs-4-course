@@ -1,4 +1,4 @@
-(ns labs-4-cource.debug-component
+(ns labs-4-cource.components.debug-component
   (:require [labs-4-cource.debuging :refer [draw-line-by-point!]]
             [labs-4-cource.reagent-helpers :refer [get-value]]
             [labs-4-cource.storage

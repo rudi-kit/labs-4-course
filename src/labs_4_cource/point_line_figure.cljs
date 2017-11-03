@@ -23,11 +23,7 @@
   (assoc carcas :type :carcas))
 
 (defmethod line-points :carcas [{:keys [points lines]}]
-  (let [lines-with-substituted-points
-        (into []
-              (mapv
-               (partial
-                mapv (fn [p](nth points p))) lines))]
-    (mapcat line-points (into [] (map (partial apply ->BrezenhameLine) lines-with-substituted-points)))))
+  (mapcat line-points
+          (map (fn [[p1 p2]] (->BrezenhameLine (nth points p1) (nth points p2))) lines)))
 
 (line-points (->CarcasFigure {:points [[0 0 0] [1 1 1] [2 2 2]] :lines [[0 1] [1 1] [0 2]]}))

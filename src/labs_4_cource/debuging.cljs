@@ -4,6 +4,7 @@
              :refer
              [clean-canvas! draw-pixels! swap-hidden-to-visible!]]
             [labs-4-cource.first-order-lines :refer [line-points]]
+            [labs-4-cource.poligons]
             [labs-4-cource.storage
              :refer
              [add-primitives
@@ -59,6 +60,7 @@
 (derive :ermit ::line)
 (derive :bezie ::line)
 (derive :spline ::line)
+(derive :poligon ::line)
 
 (defmethod get-line [:wu    :not] [line]  (line-points line))
 (defmethod get-line :default [line]  (map (fn [[x y]] [x y 1]) (line-points line)))

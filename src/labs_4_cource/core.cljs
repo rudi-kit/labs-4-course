@@ -1,5 +1,5 @@
 (ns labs-4-cource.core
-  (:require [labs-4-cource.canvas-component :refer [div-with-canvas]]
+  (:require [labs-4-cource.components.canvas-component :refer [div-with-canvas]]
             [labs-4-cource.components.tool-panel-component :refer [tool-panel]]
             [labs-4-cource.debuging :refer [draw-canvas-contents!]]
             [labs-4-cource.storage :refer [new-primitives primitives]]

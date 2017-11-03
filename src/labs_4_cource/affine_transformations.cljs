@@ -88,4 +88,40 @@
          (seq
           (m/mmul
            (m/matrix (map point-> points))
-           (scale-matrix scales))))))
+           (translation-matrix (map - center))
+           (scale-matrix scales)
+           (translation-matrix center))))))
+
+(defn projection-matrix [[x y z :as scale]]
+  {:pre [(= 3 (count scale))]}
+  (m/matrix
+   [[1 0 0 0]
+    [0 1 0 0]
+    [0 0 1 (/ 1 x)]
+    [0 0 0 1]]))
+
+(defn projection-point
+    [point]
+    (conj point 0))
+
+(defn project [points scales]
+  {:pre [(= 3 (count scales))]}
+  (let [center (get-center points)]
+    (map ->point
+         (seq
+          (m/mmul
+           (m/matrix (map projection-point points))
+           (projection-matrix scales)
+           )))))
+
+(project '([100 100 0]
+           [300 300 300] 
+           [100 300 300]) [10 0 0])
+
+(projection-point [200 200 200])
+(project '([200 200 200]) [100 0 0])
+(project '([100 100 0]) [-10 0 0])
+(m/mmul
+ (m/matrix (map projection-point '([200 200 200])))
+ (projection-matrix [100 0 0])
+ )

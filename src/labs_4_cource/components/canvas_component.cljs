@@ -1,4 +1,4 @@
-(ns labs-4-cource.canvas-component
+(ns labs-4-cource.components.canvas-component
   (:require [labs-4-cource.canvas :as can :refer [clean! toggle-smoothing!]]
             [labs-4-cource.event-handlers
              :refer

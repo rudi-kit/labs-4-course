@@ -47,6 +47,7 @@
                  (= :bezie new-state) :bezie
                  (= :spline new-state) :spline
                  (= :carcas new-state) :carcas
+                 (= :poligon new-state) :poligon
                  :else :2-points)
                :event new-state}))
 

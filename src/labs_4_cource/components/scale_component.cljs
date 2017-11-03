@@ -1,4 +1,4 @@
-(ns labs-4-cource.scale-component)
+(ns labs-4-cource.components.scale-component)
 
 (defn scale-component [value on-change]
     [:select {:onChange (fn [event] (-> event

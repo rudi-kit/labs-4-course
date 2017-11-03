@@ -1,17 +1,17 @@
 (ns labs-4-cource.carcas-mode
   (:require [labs-4-cource.affine-transformations
              :refer
-             [degree->radian diff rotate scale translate]]
-            [labs-4-cource.event-handlers :refer [event-pos]]
+             [project rotate scale translate]]
             [labs-4-cource.state-mashines :refer [get-state StateMachine]]
             [labs-4-cource.storage
              :refer
-             [carcas-modification-state new-points new-primitives]]
+             [carcas-modification-state new-primitives]]
             [taoensso.timbre :as timbre :refer-macros [debug spy]]))
 
 (derive :translate ::mode)
 (derive :scale ::mode)
 (derive :rotate ::mode)
+(derive :project ::mode)
 
 (derive :move ::mouse)
 (derive :click ::mouse)
@@ -38,7 +38,7 @@
 
 (defmethod push-event-carcas-mode [:translate :keyboard]
   [this {event :event}]
-  (let [translation-diff (spy :info (map (partial * 0.1) (get-axis-delta event)))]
+  (let [translation-diff (spy :info (get-axis-delta event))]
     (swap! new-primitives update-in [0 :points]
            translate translation-diff)))
 
@@ -50,9 +50,15 @@
 
 (defmethod push-event-carcas-mode [:scale :keyboard]
   [this {event :event}]
-  (let [scale-diff (map (partial * 0.1) (get-axis-delta event))]
+    (let [scale-diff (map (fn [x] (+ 1 (* 0.1 x))) (get-axis-delta event))]
     (swap! new-primitives update-in [0 :points]
            scale scale-diff)))
+
+(defmethod push-event-carcas-mode [:project :keyboard]
+  [this {event :event}]
+    (let [projection-diff (get-axis-delta event)]
+    (swap! new-primitives update-in [0 :points]
+           project projection-diff)))
 
 (defmethod push-event-carcas-mode [::mode :file]
   [this {file :event}]

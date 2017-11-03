@@ -1,19 +1,20 @@
 (ns labs-4-cource.storage
-  (:require [labs-4-cource.aproximation :refer [->Bezie ->Ermit ->Spline]]
-            [labs-4-cource.first-order-lines
-             :refer
-             [->BrezenhameLine ->SimpleLine ->SmoothLine]]
-            [labs-4-cource.point-line-figure :refer [->CarcasFigure]]
-            [labs-4-cource.second-order-lines
-             :refer
-             [->Circle ->Elipse ->Elipse-2 ->Hyperbola]]
-            [reagent.core :as r]
-            [taoensso.timbre :as timbre :refer-macros [info spy]]))
+    (:require [labs-4-cource.aproximation :refer [->Bezie ->Ermit ->Spline]]
+              [labs-4-cource.first-order-lines
+               :refer
+               [->BrezenhameLine ->SimpleLine ->SmoothLine]]
+              [labs-4-cource.point-line-figure :refer [->CarcasFigure]]
+              [labs-4-cource.second-order-lines
+               :refer
+               [->Circle ->Elipse ->Elipse-2 ->Hyperbola]]
+              [reagent.core :as r]
+              [taoensso.timbre :as timbre :refer-macros [info spy]]
+              [labs-4-cource.poligons :refer [->Poligon]]))
 
 (defonce drawer (r/atom nil))
 (defonce width (r/atom 640))
 (defonce height (r/atom 640))
-(defonce scale (r/atom 4))
+(defonce scale (r/atom 1))
 (defonce primitives (r/atom []))
 
 (defonce debug-state (r/atom :not))
@@ -43,9 +44,10 @@
                        :ermit ->Ermit
                        :bezie ->Bezie
                        :spline ->Spline
-                       :carcas ->CarcasFigure})
+                       :carcas ->CarcasFigure
+                       :poligon ->Poligon})
 
-(def line-types [:simple :be :wu :circle :elipse :elipse-2 :hyperbola :ermit :bezie :spline :carcas])
+(def line-types [:simple :be :wu :circle :elipse :elipse-2 :hyperbola :ermit :bezie :spline :carcas :poligon])
 
 (defn change-selected [value]
     (info "change-selected" value)

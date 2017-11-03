@@ -1,4 +1,4 @@
-(ns labs-4-cource.debug-level-comonent)
+(ns labs-4-cource.components.debug-level-comonent)
 
 (def log-levels [:trace :debug :info :warn :error :fatal :report])
 (defn debug-level-component [current on-change]
