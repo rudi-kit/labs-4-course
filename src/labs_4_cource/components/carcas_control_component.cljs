@@ -1,7 +1,7 @@
 (ns labs-4-cource.components.carcas-control-component
   (:require [cljs.tools.reader :refer [read-string]]
             [labs-4-cource.point-line-figure :refer [->CarcasFigure]]
-            [labs-4-cource.reagent-helpers :refer [get-value]]
+            [labs-4-cource.reagent-helpers :refer [reset-ratom-value-fun]]
             [labs-4-cource.state-mashines :refer [push-event]]
             [labs-4-cource.storage
              :refer
@@ -54,9 +54,8 @@
          {:type :radio
           :value item
           :checked (= item @carcas-modification-state)
-          :onChange (comp (partial reset! carcas-modification-state) keyword get-value)}]
+          :onChange (reset-ratom-value-fun carcas-modification-state)}]
         item]]))
-   [:button    "Reflect"]
    [:label {:for :file} "Load"]
    [file-loader :file]
    [:button {:onClick push-last-figure} "redraw"]])

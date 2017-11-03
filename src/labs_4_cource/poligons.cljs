@@ -119,7 +119,6 @@
    (let [[fixed-point other-points] (jarvis-extra-point points)]
      (jarvis-shell [fixed-point] fixed-point (concat other-points [fixed-point]))))
   ([[fixed-point :as shell] current-point other-points]
-   (pr shell  current-point other-points)
    (let [[right-point other-points] (jarvis-the-most-right current-point other-points)]
      (if (= right-point fixed-point)
        shell
@@ -130,5 +129,3 @@
   returns a poligon"
   [points]
   (->Poligon (jarvis-shell points)))
-
-(jarvis-shell [[1 1] [5 1] [3 3] [3 6]])

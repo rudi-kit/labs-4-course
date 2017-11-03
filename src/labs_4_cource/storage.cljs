@@ -44,8 +44,9 @@
                        :ermit ->Ermit
                        :bezie ->Bezie
                        :spline ->Spline
-                       :carcas ->CarcasFigure
-                       :poligon ->Poligon})
+                       :carcas ->CarcasFigure})
+
+(defonce current-poligon-algo (r/atom :grehem))
 
 (def line-types [:simple :be :wu :circle :elipse :elipse-2 :hyperbola :ermit :bezie :spline :carcas :poligon])
 

@@ -1,9 +1,11 @@
 (ns labs-4-cource.modes.poligon-mode
   (:require [labs-4-cource.event-handlers :refer [event-pos]]
-            [labs-4-cource.poligons :refer [grehem-poligon]]
+            [labs-4-cource.poligons :refer [grehem-poligon jarvis-poligon]]
             [labs-4-cource.second-order-lines :refer [->CircleR]]
             [labs-4-cource.state-mashines :refer [->StateMachine noop]]
-            [labs-4-cource.storage :refer [new-points new-primitives]]))
+            [labs-4-cource.storage
+             :refer
+             [current-poligon-algo new-points new-primitives]]))
 
 (defn set-supported-points
   "draw selected points"
@@ -23,7 +25,11 @@
 (defn submit [event]
   "create poligon from new-points"
   (.preventDefault event)
-  (reset! new-primitives [(grehem-poligon @new-points)])
+  (reset! new-primitives
+          [((cond (= :grehem @current-poligon-algo) grehem-poligon
+                  (= :jarvis @current-poligon-algo) jarvis-poligon
+                  :else
+                  (throw js/Error. (str "incorrect poligon algo " "[" @current-poligon-algo "]")))  @new-points)])
   (reset! new-points nil))
 
 (def poligon-transition-table
