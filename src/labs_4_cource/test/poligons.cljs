@@ -10,7 +10,9 @@
               grehem-shell
               grehem-sort-by-angle
               is-in-grehem-shell
-              is-poligon-convex]]))
+              is-poligon-convex
+              jarvis-shell
+              jarvis-the-most-right]]))
 
 (deftest creatation-poligon
   (is (= {:type :poligon :points [[0 0] [1 1] [2 3]]} (->Poligon [[0 0] [1 1] [2 3]]))))
@@ -36,10 +38,21 @@
   (is (= [[21 14] [21 18] [24 23] [15 20] [11 14] [8 23]] (grehem-sort-by-angle [11 8] points-for-grehem))))
 
 (deftest points-is-in-grehem-shell
-    (is (not (is-in-grehem-shell [[21 14] [21 18] [24 23]]))))
+  (is (not (is-in-grehem-shell [[21 14] [21 18] [24 23]]))))
 
 (deftest grehem-shell-test
-    (is (= [[5 2] [7 6] [1 6]] (grehem-shell [[5 2] [7 6] [4 4] [1 6]])))
-    (is (= [[1 1] [5 1] [3 6]] (grehem-shell [[1 1] [3 3] [5 1] [3 6]]))))
+  (is (= [[5 2] [7 6] [1 6]] (grehem-shell [[5 2] [7 6] [4 4] [1 6]])))
+  (is (= [[1 1] [5 1] [3 6]] (grehem-shell [[1 1] [5 1] [3 3] [3 6]]))))
+
+(deftest jarvis-the-most-right-test
+  (is (= [[6 5] [[4 4]]] (jarvis-the-most-right [3 1] [[4 4] [6 5]])))
+  (is (= [[3 3] [[3 6] [2 5]]] (jarvis-the-most-right [1 1] [[3 3] [3 6] [2 5]])))
+  (is (= [[3 3] []] (jarvis-the-most-right [1 1] [[3 3]])))
+  (is (= [[3 6] [[3 3] [1 1]]] (jarvis-the-most-right [5 1] [[3 3] [3 6] [1 1]])))
+  (comment (is (= [[5 1] [[1 1] [3 3] [3 6]]] (jarvis-the-most-right [1 1] [[1 1] [5 1] [3 3] [3 6]])))))
+
+(deftest jarvis-algo-test
+  (is (= [[5 2] [7 6] [1 6]] (jarvis-shell [[1 6] [4 4] [7 6] [5 2]])))
+  (is (= [[1 1] [5 1] [3 6]] (jarvis-shell [[1 1] [5 1] [3 3] [3 6]]))))
 
 (cljs.test/run-tests 'labs-4-cource.test.poligons)
