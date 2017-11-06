@@ -1,8 +1,8 @@
 (ns labs-4-cource.second-order-lines
-  (:require [cljs.test :refer-macros [deftest is run-tests]]
-            [clojure.core.matrix :as m]
-            [labs-4-cource.first-order-lines :refer [floor line-points]]
-            [taoensso.timbre :as timbre :refer-macros [info debug debug trace]]))
+  (:require [clojure.core.matrix :as m]
+            [labs-4-cource.first-order-lines :refer [line-points]]
+            [labs-4-cource.math-helpers :refer [round]]
+            [taoensso.timbre :as timbre :refer-macros [debug]]))
 
 (defn pow-2 [x]
   (* x x))
@@ -25,14 +25,14 @@
 
 ;;; Circle
 (defn ->Circle [p1 p2]
-  {:type :circle :center (map floor p1) :radius (floor (length p1 p2))})
+  {:type :circle :center (map round p1) :radius (round (length p1 p2))})
 
 (defn ->CircleR [r p1]
-   {:type :circle :center (map floor p1) :radius (floor r)} )
+   {:type :circle :center (map round p1) :radius (round r)} )
 
 (defn quadrant-points
   "get first quadrant points of circle"
-  ([r] (map (fn [[x y]] [(floor x) (floor y)])
+  ([r] (map (fn [[x y]] [(round x) (round y)])
             (quadrant-points 0 r 0 (- 2 (* 2 r)) [[0 r]])))
   ([x y limit d plot]
    (debug x y limit d plot)
@@ -88,19 +88,19 @@
   "two point - rectangle conners"
   (let [min-x (min x1 x2)
         min-y (min y1 y2)
-        a (Math/abs (floor (/ (- x2 x1) 2)))
-        b (Math/abs (floor (/ (- y2 y1) 2)))]
-    {:type :elipse :center (map floor [(+ min-x a) (+ min-y b)]) :a a :b b}))
+        a (Math/abs (round (/ (- x2 x1) 2)))
+        b (Math/abs (round (/ (- y2 y1) 2)))]
+    {:type :elipse :center (map round [(+ min-x a) (+ min-y b)]) :a a :b b}))
 
 (defn ->Elipse-2 [[x1 y1] [x2 y2]]
   "first point - center"
-  (let [a (Math/abs (floor (- x2 x1)))
-        b (Math/abs (floor (- y2 y1)))]
-    {:type :elipse :center (map floor [x1 y1]) :a a :b b}))
+  (let [a (Math/abs (round (- x2 x1)))
+        b (Math/abs (round (- y2 y1)))]
+    {:type :elipse :center (map round [x1 y1]) :a a :b b}))
 
 (defn elipse-quadrant-points
   "generate first quadrant of elipse"
-  ([a b] (map (fn [[x y]] [(floor x) (floor y)])
+  ([a b] (map (fn [[x y]] [(round x) (round y)])
               (elipse-quadrant-points 0 b a b 0 (+ (* a a) (* b b) (- (* 2 a b))) (list [0 b]))))
   ([x y a b limit d plot]
    (if (> y limit)
@@ -153,12 +153,12 @@
 
 ;;; Hyperbola
 (defn ->Hyperbola [[x1 y1] [x2 y2]]
-  (let [a (Math/abs (floor (- x2 x1)))
-        b (Math/abs (floor (- y2 y1)))]
-    {:type :hyperbola :center (map floor [x1 y1]) :a a :b b}))
+  (let [a (Math/abs (round (- x2 x1)))
+        b (Math/abs (round (- y2 y1)))]
+    {:type :hyperbola :center (map round [x1 y1]) :a a :b b}))
 
 (defn hyperbola-quadrant-points
-  ([a b] (map (fn [[x y]] [(floor x) (floor y)])
+  ([a b] (map (fn [[x y]] [(round x) (round y)])
               (hyperbola-quadrant-points a 0 a b 100 (+ (- (* a a)) (* b b) (* 2 a b)) (list [a 0]))))
   ([x y a b limit d plot]
    (debug plot)

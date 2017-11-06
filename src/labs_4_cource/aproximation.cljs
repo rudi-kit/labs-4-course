@@ -1,12 +1,13 @@
 (ns labs-4-cource.aproximation
-  (:require [clojure.core.matrix :as m]
-            [labs-4-cource.first-order-lines
-             :refer
-             [->BrezenhameLine floor line-points]]))
+    (:require [clojure.core.matrix :as m]
+              [labs-4-cource.first-order-lines
+               :refer
+               [->BrezenhameLine line-points]]
+              [labs-4-cource.math-helpers :refer [round]]))
 
 (defn get-form-points [matrix [p1 p2 p3 p4]]
     (m/emap
-     floor
+     round
      (m/mmul
       (m/matrix
        (map (fn [t] [(* t t t) (* t t) t 1]) (range 0 1 0.05)))

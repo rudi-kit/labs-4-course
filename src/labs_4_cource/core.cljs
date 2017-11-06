@@ -10,16 +10,16 @@
 (timbre/set-level! :info)
 
 (defn home []
-    (debug "home")
-    [:div.draw-container
-     [tool-panel]
-     [div-with-canvas]
-     ])
+  (debug "home")
+  [:div.draw-container
+   [tool-panel]
+   [div-with-canvas]])
 
 (defn ^:export init! []
-    (debug "init")
-    (reagent/render [home]
-                    (.getElementById js/document "app"))
+  (debug "init")
+  (reagent/render [home]
+                  (.getElementById js/document "app"))
 
-    (draw-canvas-contents! @primitives @new-primitives)
-    )
+  (draw-canvas-contents! @primitives @new-primitives))
+
+(init!)
