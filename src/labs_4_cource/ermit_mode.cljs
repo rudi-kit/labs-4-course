@@ -1,7 +1,7 @@
 (ns labs-4-cource.ermit-mode
   (:require [labs-4-cource.event-handlers
              :refer
-             [event-pos generate-current-line push]]
+             [event-pos generate-current-line ]]
             [labs-4-cource.first-order-lines :refer [->SimpleLine]]
             [labs-4-cource.second-order-lines :refer [->CircleR]]
             [labs-4-cource.state-mashines :refer [->StateMachine noop]]
@@ -9,17 +9,17 @@
             [taoensso.timbre :as log :refer [spy]]))
 
 (defn ermit-form-support [[p1 p2 p3 p4]]
-    (spy :info [p1 p2 p3 p4])
-    (into '()
-          (concat
-           (list (generate-current-line)
+  (spy :info [p1 p2 p3 p4])
+  (into '()
+        (concat
+         (list (generate-current-line)
 
-                 (->SimpleLine p1 p2)
-                 (->SimpleLine p3 p4))
-           (doall (map (partial ->CircleR 2) @new-points)))))
+               (->SimpleLine p1 p2)
+               (->SimpleLine p3 p4))
+         (doall (map (partial ->CircleR 2) @new-points)))))
 
 (comment
-    (atom (ermit-form-support @new-points)))
+  (atom (ermit-form-support @new-points)))
 
 (defn set-point [i event]
   (let [pos (event-pos event)]
@@ -35,25 +35,25 @@
 
 (defn append-4-point-primitive [event]
   (let [pos (event-pos event)]
-    (reset! new-points (list pos pos pos pos))
-    (reset! new-primitives (list (generate-current-line)))))
+    (reset! new-points (array pos pos pos pos))
+    (reset! new-primitives (array (generate-current-line)))))
 
 (defn submit-full-primitive [event]
-  (swap! primitives (partial push (generate-current-line)))
+  (swap! primitives conj (generate-current-line))
   (reset! new-points nil)
   (reset! new-primitives nil))
 
 (def ermit-transition-table
-  {:0 {:click :1 :move :0}
-   :1 {:click :2 :move :1}
-   :2 {:click :3 :move :2}
-   :3 {:click :0 :move :3}})
+  {:0 {:click :1 :move :0 :right-click :0}
+   :1 {:click :2 :move :1 :right-click :1}
+   :2 {:click :3 :move :2 :right-click :2}
+   :3 {:click :0 :move :3 :right-click :3}})
 
 (def ermit-action-table
   {:0 {:click append-4-point-primitive :move noop}
-   :1 {:click (partial set-point 1) :move (partial set-point 1)}
-   :2 {:click (partial set-point 2) :move (partial set-point 2)}
-   :3 {:click submit-full-primitive :move (partial set-point 3)}})
+   :1 {:click (partial set-point 1) :move (partial set-point 1) :right-click :noop}
+   :2 {:click (partial set-point 2) :move (partial set-point 2)  :right-click :noop}
+   :3 {:click submit-full-primitive :move (partial set-point 3) :right-click :noop}})
 
 (defn ->ErmitMode []
   (let [state (atom :0)]

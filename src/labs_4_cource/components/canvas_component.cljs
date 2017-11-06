@@ -1,4 +1,4 @@
-(ns labs-4-cource.canvas-component
+(ns labs-4-cource.components.canvas-component
   (:require [labs-4-cource.canvas :as can :refer [clean! toggle-smoothing!]]
             [labs-4-cource.event-handlers
              :refer
@@ -6,11 +6,13 @@
             [labs-4-cource.storage :refer [drawer height primitives width]]
             [labs-4-cource.updaters :refer [registrate-storage-handlers]]
             [reagent.core :as reagent]
-            [taoensso.timbre :as log :refer [spy]]))
+            [taoensso.timbre :as log :refer [spy]]
+            [labs-4-cource.event-handlers :refer [on-right-click!]]))
 
-(defn clean-canvas! []
+(defn clean-canvas!
   "event handler of button clean canvas"
-  (spy :debug "clean-canvas")
+  []
+  (spy :info "clean-canvas")
   (clean! @drawer)
   (reset! primitives nil))
 
@@ -41,6 +43,7 @@
        [:canvas {:id "visible"
                  :width @width
                  :onClick on-click!
+                 :onContextMenu on-right-click!
                  :onMouseMove on-mouse-move!
                  :height @height
                  :style {:border "solid 1px"}}]

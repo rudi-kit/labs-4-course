@@ -7,3 +7,9 @@
         .-target
         .-value
         (spy :info "get-value")))
+
+(defn reset-ratom-value-fun [ratom]
+    (fn [event] (reset-ratom-value ratom event)))
+
+(defn reset-ratom-value [ratom event]
+    (reset! ratom (keyword (get-value event))))

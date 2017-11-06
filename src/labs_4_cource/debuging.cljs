@@ -1,7 +1,9 @@
 (ns labs-4-cource.debuging
-  (:require [cljs.test :refer-macros [deftest]]
-            [labs-4-cource.canvas :refer [draw-pixels! swap-hidden-to-visible!]]
+  (:require [labs-4-cource.canvas
+             :refer
+             [clean-canvas! draw-pixels! swap-hidden-to-visible!]]
             [labs-4-cource.first-order-lines :refer [line-points]]
+            [labs-4-cource.poligons]
             [labs-4-cource.storage
              :refer
              [add-primitives
@@ -17,9 +19,9 @@
             [taoensso.timbre :as timbre :refer-macros [spy]]))
 
 (defn save-debug-line! []
-    (when-not (nil? (:line @not-full-line))
-        (draw-pixels! @drawer (:rest-points @not-full-line))
-        (add-primitives (:line @not-full-line))))
+  (when-not (nil? (:line @not-full-line))
+    (draw-pixels! @drawer (:rest-points @not-full-line))
+    (add-primitives (:line @not-full-line))))
 
 (defn draw-line-by-point! []
   (spy :debug "draw-point" (when (seq (:rest-points @not-full-line)) (draw-pixels! @drawer [(first (:rest-points @not-full-line))])))
@@ -34,19 +36,13 @@
 
 (defn add-line-from-pos []
   (when (spy :info (= (count @new-points) 2))
-      (let [line (spy :info "new-line" (apply (@selected lines-generators) @new-points))]
-          (if (= @debug-state :not)
-              (add-primitives line)
-              (add-line-to-debug! line))
-          (reset! new-points nil))))
+    (let [line (spy :info "new-line" (apply (@selected lines-generators) @new-points))]
+      (if (= @debug-state :not)
+        (add-primitives line)
+        (add-line-to-debug! line))
+      (reset! new-points nil))))
 
-(deftest add-line-to-debug-test
-  (reset! not-full-line nil)
-  (add-line-to-debug! (line-points {:type :wu :p1 [0 0] :p2 [5 5]}))
-  (= @not-full-line {:line {:type :wu [0 0] [5 5]}
-                     :rest-points '([0 0 1] [1 1 1] [2 2 1] [3 3 1] [4 4 1] [5 5 1])}))
-
-(defmulti get-line (fn [line] (spy :info (str "draw-line " line) [(:type line) @debug-state])))
+(defmulti get-line (fn [line] (spy :debug (str "draw-line " line) [(:type line) @debug-state])))
 
 (derive :simple ::line)
 (derive :be     ::line)
@@ -56,25 +52,37 @@
 (derive :hyperbola ::line)
 (derive :ermit ::line)
 (derive :bezie ::line)
+(derive :spline ::line)
+(derive :poligon ::line)
 
 (defmethod get-line [:wu    :not] [line]  (line-points line))
-(defmethod get-line [::line :not] [line]  (map (fn [[x y]] [x y 1]) (line-points line)))
-(defmethod get-line [::line :debug] [line] (add-line-to-debug! line))
+(defmethod get-line :default [line]  (map (fn [[x y]] [x y 1]) (line-points line)))
 
+(defn draw-permanent-content [{:keys [hidden visible] :as drawer} lines]
+  (clean-canvas! hidden)
+  (draw-pixels! hidden
+                (mapcat get-line lines)))
 
-(defn draw-canvas-contents! []
-    (let [commited @primitives
-          temp @new-primitives
-          {:keys [visible hidden extra]} @drawer]
-        (when-not (nil? commited)
-            (draw-pixels! hidden
-                          (mapcat get-line commited))
-            (swap-hidden-to-visible! visible hidden))
-        (when-not (nil? temp)
-            (draw-pixels! extra
-                          (mapcat get-line temp))
-            (swap-hidden-to-visible! visible extra)))
-  )
+(defn draw-temporaly-content [{:keys [extra visible] :as drawer} lines]
+  (clean-canvas! extra)
+  (draw-pixels! extra
+                (mapcat get-line lines)))
+
+(defn draw-canvas-contents!
+  [permanent-change temporary]
+  (swap! drawer assoc :perm-changed (not permanent-change) :temp-changed (not (nil? temporary))))
+
+(defn draw-visible-content
+  [{:keys [visible hidden extra perm-changed temp-changed] :as drawer}]
+  {:pre [(not (nil? visible))]}
+  (when (or temp-changed perm-changed) (clean-canvas! visible))
+  (when perm-changed
+    (draw-permanent-content drawer @primitives)
+    (swap-hidden-to-visible! visible hidden))
+  (when temp-changed
+    (draw-temporaly-content drawer @new-primitives)
+    (swap-hidden-to-visible! visible extra))
+  (assoc drawer :perm-changed nil :temp-changed nil))
 
 (comment (mapcat get-line @new-primitives)
          (mapcat   (comp pr :type) @primitives)

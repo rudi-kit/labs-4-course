@@ -4,6 +4,7 @@
             [labs-4-cource.first-order-lines
              :refer
              [->BrezenhameLine ->SimpleLine ->SmoothLine]]
+            [labs-4-cource.point-line-figure :refer [->CarcasFigure]]
             [labs-4-cource.reagent-helpers :refer [get-value]]
             [labs-4-cource.second-order-lines :refer [->Circle ->Elipse]]
             [labs-4-cource.storage :refer [debug-state primitives]]
@@ -32,6 +33,28 @@
                [0 0 100 1])
     )
 
+(def qube {:points [[100 100 0]
+                    [300 100 0]
+                    [300 300 0]
+                    [100 300 0]
+                    [100 100 300]
+                    [300 100 300]
+                    [300 300 300]
+                    [100 300 300]
+                    ]
+           :lines [[0 1]
+                   [0 3]
+                   [1 2]
+                   [2 3]
+                   [4 5]
+                   [4 7]
+                   [5 6]
+                   [6 7]
+                   [0 4]
+                   [1 5]
+                   [2 6]
+                   [3 7]]})
+
 (def lines-supliers
     (r/atom
      {:simple
@@ -48,6 +71,8 @@
       (fn [] [(->Elipse [10 40] [120 50])])
       :ermit
       (fn [] (list (->Ermit [30 30] [140 100] [130 20] [200 400])))
+      :carcas
+      (fn [] [(->CarcasFigure qube)])
       }))
 
 (defonce curent-line-suplier (r/atom (first (keys @lines-supliers))))
