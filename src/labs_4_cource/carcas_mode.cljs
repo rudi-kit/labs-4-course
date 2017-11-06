@@ -50,13 +50,13 @@
 
 (defmethod push-event-carcas-mode [:scale :keyboard]
   [this {event :event}]
-    (let [scale-diff (map (fn [x] (+ 1 (* 0.1 x))) (get-axis-delta event))]
+  (let [scale-diff (map (fn [x] (+ 1 (* 0.1 x))) (get-axis-delta event))]
     (swap! new-primitives update-in [0 :points]
            scale scale-diff)))
 
 (defmethod push-event-carcas-mode [:project :keyboard]
   [this {event :event}]
-    (let [projection-diff (get-axis-delta event)]
+  (let [projection-diff (get-axis-delta event)]
     (swap! new-primitives update-in [0 :points]
            project projection-diff)))
 

@@ -6,9 +6,6 @@
             [reagent.core :as reagent]
             [taoensso.timbre :as timbre :refer-macros [debug]]))
 
-(enable-console-print!)
-(timbre/set-level! :info)
-
 (defn home []
   (debug "home")
   [:div.draw-container
@@ -16,10 +13,8 @@
    [div-with-canvas]])
 
 (defn ^:export init! []
+  (enable-console-print!)
   (debug "init")
+  (timbre/set-level! :info)
   (reagent/render [home]
-                  (.getElementById js/document "app"))
-
-  (draw-canvas-contents! @primitives @new-primitives))
-
-(init!)
+                  (.getElementById js/document "app")))

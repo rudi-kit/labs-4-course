@@ -56,14 +56,6 @@
           (sort
            (map vector polar-angles distances points)))))
 
-(grehem-sort-by-angle [11 8] [[21 14] [11 8] [21 18] [24 23] [15 20] [11 14] [8 23]])
-
-(map (partial distance [0 0]) [[21 14] [11 8] [21 18] [24 23] [15 20] [11 14] [8 23]])
-
-(map ;; seq polar angles
- (fn [[xj yj]] (Math/acos (/ (- yj 0) (- xj 0))))
- [[21 14] [11 8] [21 18] [24 23] [15 20] [11 14] [8 23]])
-
 (defn is-in-grehem-shell [points]
   (< 0 (edges-points-mult points)))
 

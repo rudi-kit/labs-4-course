@@ -1,6 +1,5 @@
 (ns labs-4-cource.debuging
-  (:require [cljs.test :refer-macros [deftest]]
-            [labs-4-cource.canvas
+  (:require [labs-4-cource.canvas
              :refer
              [clean-canvas! draw-pixels! swap-hidden-to-visible!]]
             [labs-4-cource.first-order-lines :refer [line-points]]
@@ -42,12 +41,6 @@
         (add-primitives line)
         (add-line-to-debug! line))
       (reset! new-points nil))))
-
-(deftest add-line-to-debug-test
-  (reset! not-full-line nil)
-  (add-line-to-debug! (line-points {:type :wu :p1 [0 0] :p2 [5 5]}))
-  (= @not-full-line {:line {:type :wu [0 0] [5 5]}
-                     :rest-points '([0 0 1] [1 1 1] [2 2 1] [3 3 1] [4 4 1] [5 5 1])}))
 
 (defmulti get-line (fn [line] (spy :debug (str "draw-line " line) [(:type line) @debug-state])))
 

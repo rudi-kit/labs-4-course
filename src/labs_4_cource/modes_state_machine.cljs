@@ -129,7 +129,3 @@
      (fn [mode] (reset! state mode))
      modes-transition-table
      modes-action-table)))
-
-(comment
-  (get-state (->ModesMashine))
-  (push-event (->ModesMashine) {:type :2-points}))

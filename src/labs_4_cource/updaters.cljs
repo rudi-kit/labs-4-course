@@ -51,9 +51,6 @@
                  :else :2-points)
                :event new-state}))
 
-(comment
-  (get-state @mode-state-machine))
-
 (defn log [& args] (debug args))
 
 (defn set-if-not-exists [new-value old-value]
