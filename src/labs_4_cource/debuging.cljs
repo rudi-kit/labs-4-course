@@ -66,6 +66,7 @@
 (defmethod get-line :default [line]  (map (fn [[x y]] [x y 1]) (line-points line)))
 
 (defn draw-permanent-content [{:keys [hidden visible] :as drawer} lines]
+  (clean-canvas! hidden)
   (draw-pixels! hidden
                 (mapcat get-line lines)))
 

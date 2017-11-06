@@ -35,4 +35,4 @@
     (fill-raster-poligon data @width color [point])
     (.putImageData ctx data-image 0 0)))
 
-(fill-poligon (:visible @drawer) [200 200] [0 0 0 255])
+(comment (fill-poligon (:visible @drawer) [200 200] [0 0 0 255]))

@@ -64,7 +64,7 @@
         ;; используется алгоритм Брезенхема
         points (line-points (->BrezenhameLine p1 p2))]
 
-    (if (or (= x1 x2) (= y1 y2) (= dx dy))
+    (if (or (= x1 x2) (= y1 y2) (= length-x length-y))
         ;; Если отрезок горизонтальный/вертикальный/диагональный - не размазываем его
       (->> points (map (fn [[x y]] [x y 1])))
       (->> points
