@@ -54,11 +54,17 @@
     (swap! new-primitives update-in [0 :points]
            scale scale-diff)))
 
+(defn third [col]
+    (first (rest (rest col))))
+
+(defn find-minimal-z-value [points]
+    (first (sort (map third points) )))
+
 (defmethod push-event-carcas-mode [:project :keyboard]
   [this {event :event}]
-  (let [projection-diff (get-axis-delta event)]
+  (let [projection-diff (- (find-minimal-z-value (:points (first @new-primitives))) 1) ]
     (swap! new-primitives update-in [0 :points]
-           project projection-diff)))
+           project (spy :info projection-diff))))
 
 (defmethod push-event-carcas-mode [::mode :file]
   [this {file :event}]
