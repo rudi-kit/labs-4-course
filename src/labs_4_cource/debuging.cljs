@@ -69,19 +69,29 @@
                 (mapcat get-line lines)))
 
 (defn draw-canvas-contents!
+  "set flags to redraw content"
   [permanent-change temporary]
-  (swap! drawer assoc :perm-changed (not permanent-change) :temp-changed (not (nil? temporary))))
+  (pr permanent-change temporary)
+  (swap! drawer assoc
+         :perm-changed (not-empty permanent-change)
+         :temp-changed (not-empty temporary))
+  (pr (:perm-changed @drawer) (:temp-changed @drawer)))
 
 (defn draw-visible-content
+  "redraw content in optimal way using flags"
   [{:keys [visible hidden extra perm-changed temp-changed] :as drawer}]
   {:pre [(not (nil? visible))]}
-  (when (or temp-changed perm-changed) (clean-canvas! visible))
-  (when perm-changed
-    (draw-permanent-content drawer @primitives)
+  (when (or temp-changed perm-changed)
+    (when perm-changed
+      (pr "hidden")
+      (draw-permanent-content drawer @primitives))
+    (when temp-changed
+      (pr "temp")
+      (draw-temporaly-content drawer @new-primitives))
+    (clean-canvas! visible)
+
+    (swap-hidden-to-visible! visible extra)
     (swap-hidden-to-visible! visible hidden))
-  (when temp-changed
-    (draw-temporaly-content drawer @new-primitives)
-    (swap-hidden-to-visible! visible extra))
   (assoc drawer :perm-changed nil :temp-changed nil))
 
 (comment (mapcat get-line @new-primitives)

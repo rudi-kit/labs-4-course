@@ -1,6 +1,8 @@
 (ns labs-4-cource.poligons
   (:require [labs-4-cource.aproximation :refer [linearise]]
-            [labs-4-cource.first-order-lines :refer [line-points]]))
+            [labs-4-cource.first-order-lines :refer [->SimpleLine line-points]]
+            [labs-4-cource.storage :refer [primitives]]
+            [labs-4-cource.utils :refer [get-min-max-coordinates poligon-edges]]))
 
 (defn ->Poligon [points]
   {:type :poligon :points points})
@@ -10,6 +12,21 @@
   "determ of martix 2X2"
   {:pre [(= 2 (count points))]}
   (+ (* x1 y2) (- (* y1 x2))))
+
+(defn scalar-mult [vectors]
+  (reduce + (apply map * vectors)))
+
+(reduce + (apply map * [[-3 2] [4 2]]))
+
+(defn normal [[x y]]
+  "get perpendicular"
+  [(- y) x])
+
+(defn mul
+  "multiply every collections element to scalar"
+  [col scalar]
+  {:pre [(number? scalar)]}
+  (mapv * col (repeat scalar)))
 
 (defn edge-vector [edge]
   "calculate vector from 2 points"
@@ -24,12 +41,12 @@
 (defn edges-points-mult [points]
   "calculate vector mult of 2 edges. adjacent edges provides via 3 points"
   {:pre [(= 3 (count points))]}
-  (edges-mult (partition 2 1 points points)))
+  (edges-mult (poligon-edges points)))
 
 (defn is-poligon-convex [{points :points}]
   "return true if poligon is convex else - false"
-  (let [edges (partition 2 1 points points)
-        vectors (mapv edges-mult (partition 2 1 edges edges))]
+  (let [edges (poligon-edges points)
+        vectors (mapv edges-mult (poligon-edges edges))]
     (loop [s (Math/sign (first vectors))
            vectors (rest vectors)]
       (if (empty? vectors)
@@ -121,3 +138,72 @@
   returns a poligon"
   [points]
   (->Poligon (jarvis-shell points)))
+
+(defn get-hords [points]
+  (let [count (count points)]
+    (map edge-vector (map-indexed (fn [idx el] [el (nth points (rem (+ 2 idx) count))]) points))))
+
+(defn find-normals
+  "return inner normals to poligons edges.
+  return list of vectors"
+  [points]
+  {:pre [(vector? points)]}
+  (let [normals (map normal (map edge-vector (poligon-edges points)))
+        hords (get-hords points)
+        signs (map (comp Math/sign scalar-mult vector) normals hords)]
+    (map mul normals signs)))
+
+(defn parameter-line [p1 p2 t]
+  {:pre [(number? p1)
+         (number? p2)
+         (number? t)]}
+  (+ p1 (* (- p2 p1) t)))
+
+(defn get-cross-point
+  "W = P_1 - F
+   D = P_2 - P_1"
+  [normal P_1 P_2 F]
+  (let [W (mapv - F P_1)
+        D (mapv - P_2 P_1)]
+    (if (= D [0 0])
+      P_1
+      (let [t (/ (scalar-mult [normal W]) (scalar-mult [normal D]))]
+        (mapv parameter-line P_1 P_2 (repeat t))))))
+
+(defn line-point?
+  [[x y] points]
+  (let [[[x1 y1] [x2 y2]] (get-min-max-coordinates points)]
+    (and (>= x x1) (<= x x2) (>= y y1) (<= y y2))))
+
+(defn filter* [f & [filtered :as args]]
+  (let [flags (apply map f args)]
+    (filter identity (map (fn [el flag] (when flag el)) filtered flags))))
+
+(defn get-cross-points
+  [[P_1 P_2] points]
+  (let [normals (find-normals points)
+        edges (poligon-edges points)
+        cross-points (map get-cross-point normals (repeat P_1) (repeat P_2) points)]
+    (filter* line-point?  cross-points edges)))
+
+(defn horizont-line
+  [x1 x2 y]
+  [[x1 y] [x2 y]])
+
+(defn fill-poligon-with-sorter-edges
+  [points]
+  (let [x-es (sort (map first points))
+        y-es (sort (map second points))
+        minx (first x-es)
+        maxx (first (reverse x-es))
+        miny (first y-es)
+        maxy (first (reverse y-es))
+        edges (poligon-edges points)]
+    (partition
+     2
+     (sort-by (comp compare vec reverse)
+              (mapcat
+               get-cross-points
+               (map (partial horizont-line minx maxx)
+                    (range miny (inc maxy)))
+               (repeat points))))))

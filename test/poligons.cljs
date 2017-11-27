@@ -6,6 +6,11 @@
               determ-2
               edge-vector
               edges-mult
+              fill-poligon-with-sorter-edges
+              find-normals
+              get-cross-point
+              get-cross-points
+              get-hords
               grehem-extra-point
               grehem-shell
               grehem-sort-by-angle
@@ -54,5 +59,25 @@
 (deftest jarvis-algo-test
   (is (= [[5 2] [7 6] [1 6]] (jarvis-shell [[1 6] [4 4] [7 6] [5 2]])))
   (is (= [[1 1] [5 1] [3 6]] (jarvis-shell [[1 1] [5 1] [3 3] [3 6]]))))
+
+(deftest normals-test
+  (is (=  [[0 2] [-1 -1] [1 -1]] (find-normals [[1 1] [3 1] [2 2]])))
+  (is (=  [[3 -2] [-1 -2] [-3 1] [1 3]] (find-normals [[1 2] [3 5] [5 4] [4 1]]))))
+
+(deftest get-hords-test
+  (is (=  [[4 2] [1 -4] [-4 -2] [-1 4]] (get-hords [[1 2] [3 5] [5 4] [4 1]]))))
+
+(deftest cross-points-test
+  (is (=  [2 2] (get-cross-point [3 -3] [0 2] [7 2] [4 4])))
+  (is (=  [6 2] (get-cross-point [-6 0] [0 2] [7 2] [6 6])))
+  (is (=  [8 2] (get-cross-point [-6 0] [0 2] [7 2] [8 6])))
+  (is (=  [0 2] (get-cross-point [-6 0] [0 2] [0 2] [8 6]))))
+
+(deftest crosses-with-poiligon-test
+  (is (=  [[1 2] [6 2]] (get-cross-points [[0 2] [7 2]] [[1 1] [1 4] [6 6] [6 0]]))))
+
+(deftest fill-poligon-with-sorted-edges
+    (is (= [[[0 0] [9 0]] [[1 1] [5 1]] [[5 1] [9 1]] [[2 2] [4 2]] [[6 2] [9 2]] [[3 3] [3 3]] [[7 3] [9 3]] [[8 4] [9 4]] [[9 5] [9 5]]]
+           (fill-poligon-with-sorter-edges [[0 0] [3 3] [5 1] [9 5] [9 0]]))))
 
 (cljs.test/run-tests 'labs-4-cource.test.poligons)

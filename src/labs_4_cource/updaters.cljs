@@ -24,16 +24,10 @@
 
 (defn draw-changes-permanent [key reference old-state new-state]
   (:pre (array? new-state))
-  (spy :info new-state)
-  (spy :info old-state)
-  (draw-canvas-contents!
-   (filter (comp not nil?) (second (spy :info (diff old-state new-state))))
-   nil))
+  (draw-canvas-contents! new-state (:temp-changed @drawer)))
 
 (defn draw-changes-temp [key reference old-state new-state]
-  (draw-canvas-contents!
-   nil
-   new-state))
+  (draw-canvas-contents! (:perm-changed @drawer) new-state))
 
 (defn add-to-primitives! [key reference old-state new-state]
   (if (= new-state :not)
@@ -69,5 +63,4 @@
   (add-watch debug-state :debug-state-change add-to-primitives!)
   (add-watch selected :selected-state-change on-draw-mode-change)
   (swap! mode-state-machine (partial set-if-not-exists (->ModesMashine)))
-  (swap! current-mode-state-machine (partial set-if-not-exists (->2PointMode)))
-  )
+  (swap! current-mode-state-machine (partial set-if-not-exists (->2PointMode))))

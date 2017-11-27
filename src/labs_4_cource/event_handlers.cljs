@@ -12,7 +12,7 @@
               scale
               selected]]
             [reagent.core :as r]
-            [taoensso.timbre :as log :refer [spy]]))
+            [taoensso.timbre :as log :refer [debug info spy]]))
 
 (defn canvas-events "create js object wich tracks mouse position"
   [canvas] (let [events (new evt/events canvas)]
@@ -56,6 +56,6 @@
   (swap! drawer draw-visible-content))
 
 (defn  registrate-event-handlers [drawer]
-  (.addEventListener js/window "keydown" on-key-down!)
+  ;(.addEventListener js/window "keydown" on-key-down!)
   (reset! events (canvas-events (:visible @drawer)))
   (js/setInterval main-loop (/ 1000 120)))
