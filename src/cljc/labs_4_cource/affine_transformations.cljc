@@ -1,6 +1,10 @@
 (ns labs-4-cource.affine-transformations
+  #?(:clj (:gen-class))
   (:require [clojure.core.matrix :as m]
-            [taoensso.timbre :as timbre :refer-macros [debug spy]]))
+            [taoensso.timbre :as timbre]
+            #?(:cljs [taoensso.timbre :refer-macros [debug spy]])))
+
+#?(:clj (timbre/refer-timbre))
 
 (defn diff [p1 p2]
   (spy :info (mapv - p2 p1)))

@@ -1,6 +1,6 @@
 (ns labs-4-cource.first-order-lines
-  (:require [labs-4-cource.math-helpers :refer [round round-vec]]
-            [taoensso.timbre :as log :refer [spy]]))
+  #?(:clj (:gen-class))
+  (:require [labs-4-cource.math-helpers :refer [abs round round-vec sign]]))
 
 (defn ->SimpleLine
   [p1 p2]
@@ -18,7 +18,7 @@
   {:type :wu :p1 (round-vec p1) :p2 (round-vec p2)})
 
 (defn calc-steps [coordinate]
-  (mapv Math/sign coordinate))
+  (mapv sign coordinate))
 
 (defmulti line-points :type)
 
@@ -38,8 +38,8 @@
 ;; Алгоритм растеризации Брезенхема
 (defmethod line-points :be [{[x1 y1 :as p1] :p1 p2 :p2}]
   (let [proections (mapv - p2 p1) ;; проекции отрезков
-        [length-x length-y :as lengthes] (mapv Math/abs proections) ;; длинны отрезков
-        [x-step y-step] (mapv Math/sign proections) ;; диагональный шаг
+        [length-x length-y :as lengthes] (mapv abs proections) ;; длинны отрезков
+        [x-step y-step] (mapv sign proections) ;; диагональный шаг
         [x-extra y-extra] (if (>= length-x length-y) [x-step 0] [0 y-step]) ;; основной шаг
         [min max] (sort lengthes) ;; короткая/длинная проекции
         e (- (* 2 min) max)] ;; ошибка
@@ -57,8 +57,8 @@
 ;; Алгоритм антиалиасинга Ву
 (defmethod line-points :wu [{[x1 y1 :as p1] :p1 [x2 y2 :as p2] :p2}]
   (let [proections (mapv - p1 p2) ;; проекции отрезков
-        [length-x length-y :as lengthes] (mapv Math/abs proections) ;; длинны отрезков
-        [x-step y-step] (mapv Math/sign proections) ;; диагональный шаг
+        [length-x length-y :as lengthes] (mapv abs proections) ;; длинны отрезков
+        [x-step y-step] (mapv sign proections) ;; диагональный шаг
         [x-smooth y-smooth] (if (>= length-x length-y) [0 y-step] [x-step 0]) ;; направления размытия
         [min max] (sort lengthes) ;; короткая/длинная проекции
         ;; используется алгоритм Брезенхема

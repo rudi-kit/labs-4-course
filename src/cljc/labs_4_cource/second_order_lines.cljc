@@ -1,8 +1,10 @@
 (ns labs-4-cource.second-order-lines
+  #?(:clj (:gen-class))
   (:require [clojure.core.matrix :as m]
             [labs-4-cource.first-order-lines :refer [line-points]]
             [labs-4-cource.math-helpers :refer [round]]
-            [taoensso.timbre :as timbre :refer-macros [debug]]))
+            [taoensso.timbre :as timbre #?(:cljs :refer-macros
+                                           :clj :refer) [debug]]))
 
 (defn pow-2 [x]
   (* x x))
@@ -35,7 +37,6 @@
   ([r] (map (fn [[x y]] [(round x) (round y)])
             (quadrant-points 0 r 0 (- 2 (* 2 r)) [[0 r]])))
   ([x y limit d plot]
-   (debug x y limit d plot)
    (if (> y limit)
      (cond (> d 0)
            (let [d* (- (* 2 d) (* 2 x) 1)]
@@ -44,12 +45,10 @@
                      y' (dec y)
                      d' (+ d (* 2 x') (- (* 2 y')) 2)]
                            ;; select D pixel
-                 (debug  "D")
                  (recur x' y' limit d' (conj plot [x' y'])))
                (let [y' (dec y)
                      d' (+ d (- (* 2 y)) 1)]
                            ;; select V pixel
-                 (debug  "V")
                  (recur x y' limit d' (conj plot [x y'])))))
            (< d 0)
            (let [d* (+ (* 2 d) (* 2 y) (- 1))]
@@ -58,19 +57,16 @@
                (let [x' (inc x)
                      y' (dec y)
                      d' (+ d (* 2 x') (- (* 2 y')) 2)]
-                 (debug  "D")
                  (recur x' y' limit d' (conj plot [x' y'])))
                        ;; select H pixel
                (let [x' (inc x)
                      d' (+ d (* 2 x') 1)]
-                 (debug  "H")
                  (recur x' y limit d' (conj plot [x' y])))))
            (= d 0)
                ;; select D pixel
            (let [x' (inc x)
                  y' (dec y)
                  d' (+ d (* 2 x') (- (* 2 y')) 2)]
-             (debug  "D")
              (recur x' y' limit d' (conj plot [x' y']))))
      plot)))
 
@@ -111,12 +107,10 @@
                      y' (dec y)
                      d' (+ d (* b b (+ (* 2 x) 1)) (* a a (- 1 (* 2 y))))]
                          ;; select D pixel
-                 (debug  "D")
                  (recur x' y' a b limit d' (conj plot [x' y'])))
                (let [y' (dec y)
                      d' (+ d (* a a (- 1 (* 2 y))))]
                          ;; select V pixel
-                 (debug  "V")
                  (recur x y' a b limit d' (conj plot [x y'])))))
            (< d 0)
            (let [d* (- (* 2 (+ d (* a a y))) 1)]
@@ -125,19 +119,16 @@
                (let [x' (inc x)
                      y' (dec y)
                      d' (+ d (* b b (+ (* 2 x) 1)) (* a a (- 1 (* 2 y))))]
-                 (debug  "D")
                  (recur x' y' a b limit d' (conj plot [x' y'])))
                      ;; select H pixel
                (let [x' (inc x)
                      d' (+ d (* b b (inc (* 2 x))))]
-                 (debug  "H")
                  (recur x' y a b limit d' (conj plot [x' y])))))
            (= d 0)
              ;; select D pixel
            (let [x' (inc x)
                  y' (dec y)
                  d' (+ d (* b b (+ (* 2 x) 1)) (* a a (- 1 (* 2 y))))]
-             (debug  "D")
              (recur x' y' a b limit d' (conj plot [x' y']))))
      plot)))
 
@@ -161,7 +152,6 @@
   ([a b] (map (fn [[x y]] [(round x) (round y)])
               (hyperbola-quadrant-points a 0 a b 100 (+ (- (* a a)) (* b b) (* 2 a b)) (list [a 0]))))
   ([x y a b limit d plot]
-   (debug plot)
    (if (<= 0 limit)
      (cond (> d 0)
            (let [d* (+ (* 2 d) (* 2 a a y) (* a a))]
@@ -170,12 +160,10 @@
                      y' (inc y)
                      d' (+ d (* 2 b b x) (* b b) (- (* 2 a a y)) (- (* a a)))]
                          ;; select D pixel
-                 (debug  "D")
                  (recur x' y' a b (dec limit) d' (conj plot [x' y'])))
                (let [y' (inc y)
                      d' (+ d (- (* 2 a a y)) (- (* a a)))]
                          ;; select V pixel
-                 (debug  "V")
                  (recur x y' a b (dec limit) d' (conj plot [x y'])))))
            (< d 0)
            (let [d* (- (* 2 (+ d (* a a y))) 1)]
@@ -184,12 +172,10 @@
                (let [x' (inc x)
                      y' (inc y)
                      d' (+ d (* 2 b b x) (* b b) (- (* 2 a a y)) (- (* a a)))]
-                 (debug  "D")
                  (recur x' y' a b (dec limit) d' (conj plot [x' y'])))
                      ;; select H pixel
                (let [x' (inc x)
                      d' (+ d (* 2 b b x) (* b b))]
-                 (debug  "H")
                  (recur x' y a b (dec limit) d' (conj plot [x' y])))))
            (= d 0)
              ;; select D pixel

@@ -1,7 +1,8 @@
 (ns labs-4-cource.poligons
+  #?(:clj (:gen-class))
   (:require [labs-4-cource.aproximation :refer [linearise]]
-            [labs-4-cource.first-order-lines :refer [->SimpleLine line-points]]
-            [labs-4-cource.storage :refer [primitives]]
+            [labs-4-cource.first-order-lines :refer [line-points]]
+            [labs-4-cource.math-helpers :refer [sign]]
             [labs-4-cource.utils :refer [get-min-max-coordinates poligon-edges]]))
 
 (defn ->Poligon [points]
@@ -15,8 +16,6 @@
 
 (defn scalar-mult [vectors]
   (reduce + (apply map * vectors)))
-
-(reduce + (apply map * [[-3 2] [4 2]]))
 
 (defn normal [[x y]]
   "get perpendicular"
@@ -33,6 +32,12 @@
   {:pre (= 2 (count edge))}
   (apply mapv (comp - -) edge))
 
+(defn calc-polar-angle [[x1 y1] [x2 y2]]
+  (Math/atan2 (- y2 y1) (- x2 x1)))
+
+(defn calc-polar-angle* [point points]
+  (map calc-polar-angle (repeat point) points))
+
 (defn edges-mult [edges]
   "calculate vector mult of 2 edges"
   {:pre (= 2 (count edges))}
@@ -47,27 +52,28 @@
   "return true if poligon is convex else - false"
   (let [edges (poligon-edges points)
         vectors (mapv edges-mult (poligon-edges edges))]
-    (loop [s (Math/sign (first vectors))
+    (loop [s (sign (first vectors))
            vectors (rest vectors)]
       (if (empty? vectors)
         true
-        (if (= s (Math/sign (first vectors)))
+        (if (= s (sign (first vectors)))
           (recur s (rest vectors))
           false)))))
 
-(defn grehem-extra-point [points]
-  (first (sort-by (comp vec reverse) points)))
+(defn point-by-line-comparator [p1 p2]
+  (compare (vec (reverse p1)) (vec (reverse p2))))
+
+(defn extra-point [points]
+  (first (sort point-by-line-comparator points)))
 
 (defn square [x] (* x x))
 
 (defn distance [& args]
   (Math/sqrt (reduce + (apply map (comp square -) args))))
 
-(defn grehem-sort-by-angle [[xi yi :as extra-point] points]
+(defn sort-by-angle [[xi yi :as extra-point] points]
   (let [points (remove #{extra-point} points)
-        polar-angles (map ;; seq polar angles
-                      (fn [[xj yj]] (Math/atan2 (- yj yi) (- xj xi)))
-                      points)
+        polar-angles (calc-polar-angle* extra-point points)
         distances (map (partial distance extra-point) points)]
     (map  last
           (sort
@@ -90,8 +96,8 @@
 
 (defn grehem-poligon [points]
   "collect poligon using Grehem algo"
-  (let [extra-point (grehem-extra-point points)
-        sorted (grehem-sort-by-angle extra-point points)]
+  (let [extra-point (extra-point points)
+        sorted (sort-by-angle extra-point points)]
     (->Poligon (grehem-shell (into [extra-point] sorted)))))
 
 (defmethod line-points :poligon [{points :points}]
@@ -107,31 +113,41 @@
   (let [[extra-point & other] (sort-by (comp vec reverse) points)]
     [extra-point other]))
 
-(defn jarvis-the-most-right
-  "return [right-point [points - right-point]]"
-  ([fixed-point [right-point & tested-points :as points]]
-   {:pre [(not (empty? points))]}
-   ;; call algo function
-   (jarvis-the-most-right [] fixed-point right-point tested-points))
-  ([lefter-points fixed-point r-point [guess-point :as tested-points]]
-   (if (empty? tested-points)
-     [r-point lefter-points]
-     (if (is-right-point fixed-point r-point guess-point)
-       ;; if p is more right than r -> change r
-       (recur (conj lefter-points r-point) fixed-point guess-point (rest tested-points))
-       (recur (conj lefter-points guess-point) fixed-point r-point (rest tested-points))))))
+(defn is-lower [p1 p2]
+  (> (p1 1) (p2 1)))
+
+(defn jarvis-right-chain [limit [current-point :as chain] points]
+  {:pre [(list? chain)]}
+  (if (= limit (current-point 1))
+    chain
+    (let [[next-point & rest] (sort-by-angle current-point points)
+          rest (remove (partial is-lower next-point) rest)]
+      (recur limit (conj chain  next-point) rest))))
+
+(defn point-up-to-down
+  [[x y]]
+  [(- x) (- y)])
+
+(defn sort-map [fun mapper col]
+  (map mapper (fun (map mapper col))))
+
+(defn jarvis-left-chain [limit [current-point :as chain] points]
+  {:pre [(list? chain)]}
+  (if (= limit current-point)
+    chain
+    (let [[next-point & rest]
+          (sort-map (partial sort-by-angle (point-up-to-down current-point)) point-up-to-down points)
+          rest (remove (complement (partial is-lower next-point)) rest)]
+      (recur limit (conj chain  next-point) rest))))
 
 (defn jarvis-shell
   "build minimal convex shell via jarvis algo.
   returns points to build a poligon"
   ([points]
-   (let [[fixed-point other-points] (jarvis-extra-point points)]
-     (jarvis-shell [fixed-point] fixed-point (concat other-points [fixed-point]))))
-  ([[fixed-point :as shell] current-point other-points]
-   (let [[right-point other-points] (jarvis-the-most-right current-point other-points)]
-     (if (= right-point fixed-point)
-       shell
-       (recur (conj shell right-point) right-point other-points)))))
+   (let [[extra :as points] (sort point-by-line-comparator points)
+         right-chain (jarvis-right-chain ((last points) 1) (list extra) points)
+         chain (jarvis-left-chain extra right-chain points)]
+     chain)))
 
 (defn jarvis-poligon
   "build minimal convex shell via jarvis algo.
@@ -150,7 +166,7 @@
   {:pre [(vector? points)]}
   (let [normals (map normal (map edge-vector (poligon-edges points)))
         hords (get-hords points)
-        signs (map (comp Math/sign scalar-mult vector) normals hords)]
+        signs (map (comp sign scalar-mult vector) normals hords)]
     (map mul normals signs)))
 
 (defn parameter-line [p1 p2 t]
@@ -165,10 +181,12 @@
   [normal P_1 P_2 F]
   (let [W (mapv - F P_1)
         D (mapv - P_2 P_1)]
-    (if (= D [0 0])
-      P_1
-      (let [t (/ (scalar-mult [normal W]) (scalar-mult [normal D]))]
-        (mapv parameter-line P_1 P_2 (repeat t))))))
+    (if (= 0 (scalar-mult [normal D]))
+      nil
+      (if (= D [0 0])
+        P_1
+        (let [t (/ (scalar-mult [normal W]) (scalar-mult [normal D]))]
+          (mapv parameter-line P_1 P_2 (repeat t)))))))
 
 (defn line-point?
   [[x y] points]
@@ -183,12 +201,17 @@
   [[P_1 P_2] points]
   (let [normals (find-normals points)
         edges (poligon-edges points)
-        cross-points (map get-cross-point normals (repeat P_1) (repeat P_2) points)]
+        cross-points (filter
+                      identity
+                      (map get-cross-point normals (repeat P_1) (repeat P_2) points))]
     (filter* line-point?  cross-points edges)))
 
 (defn horizont-line
   [x1 x2 y]
   [[x1 y] [x2 y]])
+
+(defn point-by-line-comparator [p1 p2]
+  (compare (vec (reverse p1)) (vec (reverse p2))))
 
 (defn fill-poligon-with-sorter-edges
   [points]
@@ -201,9 +224,9 @@
         edges (poligon-edges points)]
     (partition
      2
-     (sort-by (comp compare vec reverse)
-              (mapcat
-               get-cross-points
-               (map (partial horizont-line minx maxx)
-                    (range miny (inc maxy)))
-               (repeat points))))))
+     (sort point-by-line-comparator
+           (mapcat
+            get-cross-points
+            (map (partial horizont-line minx maxx)
+                 (range miny (inc maxy)))
+            (repeat points))))))

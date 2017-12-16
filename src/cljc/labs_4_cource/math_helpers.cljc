@@ -1,10 +1,17 @@
-(ns labs-4-cource.math-helpers)
+(ns labs-4-cource.math-helpers
+  #?(:clj (:gen-class)))
+
+(defn sign [n]
+  (compare n 0))
+
+(defn abs [n]
+  (* (sign n) n))
 
 (defn round [n]
-  (int (+ n .5)))
+  (int (+ n 0.5)))
 
 (defn round-vec [v]
-    (mapv round v))
+  (mapv round v))
 
 (defn determ-2 [[[x1 y1]
                  [x2 y2] :as points]]

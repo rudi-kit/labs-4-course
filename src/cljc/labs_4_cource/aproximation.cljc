@@ -1,4 +1,5 @@
 (ns labs-4-cource.aproximation
+  #?(:clj (:gen-class))
   (:require [clojure.core.matrix :as m]
             [labs-4-cource.first-order-lines
              :refer

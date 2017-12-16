@@ -16,11 +16,14 @@
   :min-lein-version "2.5.0"
 
   :clean-targets ^{:protect false}
+
+
   [:target-path
    [:cljsbuild :builds :app :compiler :output-dir]
    [:cljsbuild :builds :app :compiler :output-to]]
 
   :resource-paths ["public"]
+  :source-paths ["src/cljc" "test"]
 
   :figwheel {:http-server-root "."
              :nrepl-port 7002
@@ -28,7 +31,7 @@
              :css-dirs ["public/css"]}
 
   :cljsbuild {:builds {:app
-                       {:source-paths ["src" "env/dev/cljs"]
+                       {:source-paths ["src/cljc" "src/cljs" "env/dev/cljs"]
                         :compiler
                         {:main "labs-4-cource.dev"
                          :output-to "public/js/app.js"
@@ -44,7 +47,7 @@
                         {:on-jsload "labs-4-cource.core/init!"
                          :open-urls ["http://localhost:3449/index.html"]}}
                        :release
-                       {:source-paths ["src" "env/prod/cljs"]
+                       {:source-paths ["src/cljc" "src/cljs" "env/dev/cljs"]
                         :compiler
                         {:output-to "public/js/app.js"
                          :output-dir "public/js/release"

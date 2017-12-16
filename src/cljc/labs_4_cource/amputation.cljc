@@ -1,4 +1,5 @@
 (ns labs-4-cource.amputation
+  #?(:clj (:gen-class))
   (:require [labs-4-cource.utils :refer [get-min-max-coordinates]]))
 
 (defn four-bits-code
@@ -8,10 +9,10 @@
   return int (up|down|right|left)"
   [[x y] [[x1 y1] [x2 y2]]]
   (bit-or 0
-          (when (> y y1) 8)
-          (when (< y y2) 4)
-          (when (< x x1) 2)
-          (when (> x x2) 1)))
+          (if (> y y1) 8 0)
+          (if (< y y2) 4 0)
+          (if (< x x1) 2 0)
+          (if (> x x2) 1 0)))
 
 (defn four-bits-class
   "get class of line via 4-bits code
