@@ -35,8 +35,14 @@
 (defn calc-polar-angle [[x1 y1] [x2 y2]]
   (Math/atan2 (- y2 y1) (- x2 x1)))
 
+(defn polar-angle [p1 p2]
+  (let [angle (calc-polar-angle p1 p2)]
+    (if (< angle 0)
+      (+ (* 2 Math/PI) angle)
+      angle)))
+
 (defn calc-polar-angle* [point points]
-  (map calc-polar-angle (repeat point) points))
+  (map polar-angle (repeat point) points))
 
 (defn edges-mult [edges]
   "calculate vector mult of 2 edges"
@@ -75,9 +81,9 @@
   (let [points (remove #{extra-point} points)
         polar-angles (calc-polar-angle* extra-point points)
         distances (map (partial distance extra-point) points)]
-    (map  last
-          (sort
-           (map vector polar-angles distances points)))))
+    (map last
+         (sort
+          (map vector polar-angles distances points)))))
 
 (defn is-in-grehem-shell [points]
   (< 0 (edges-points-mult points)))
@@ -86,8 +92,9 @@
   "collect grehem shell from sorted points [extra-points & sorted-points]"
   ([[p1 p2 & more]] (grehem-shell more (list  p2 p1)))
   ([[p3 & more :as unchecked] [p2 p1 :as stack]]
+   (println [p1 p2 p3]  stack unchecked)
    (if (empty? unchecked)
-     (reverse stack)
+     stack
      (if (is-in-grehem-shell [p1 p2 p3])
        ;; if pass test push to stack
        (recur more (conj stack p3))
@@ -100,6 +107,8 @@
         sorted (sort-by-angle extra-point points)]
     (->Poligon (grehem-shell (into [extra-point] sorted)))))
 
+(grehem-poligon poligon1)
+
 (defmethod line-points :poligon [{points :points}]
   (linearise (concat points [(first points)])))
 
@@ -107,36 +116,27 @@
   {:pre [(= 0 (distance p1 p2))]}
   (< (edges-points-mult [p1 p2 tested]) 0))
 
-(defn jarvis-extra-point
-  "return [extra-point [points - right-point]]"
-  [points]
-  (let [[extra-point & other] (sort-by (comp vec reverse) points)]
-    [extra-point other]))
-
 (defn is-lower [p1 p2]
   (> (p1 1) (p2 1)))
 
+(defn split-after [pred col]
+  (let [[before [elem & after]] (split-with pred col)]
+    [(concat before [elem]) after]))
+
 (defn jarvis-right-chain [limit [current-point :as chain] points]
   {:pre [(list? chain)]}
-  (if (= limit (current-point 1))
+  (if (= limit current-point)
     chain
     (let [[next-point & rest] (sort-by-angle current-point points)
           rest (remove (partial is-lower next-point) rest)]
       (recur limit (conj chain  next-point) rest))))
-
-(defn point-up-to-down
-  [[x y]]
-  [(- x) (- y)])
-
-(defn sort-map [fun mapper col]
-  (map mapper (fun (map mapper col))))
 
 (defn jarvis-left-chain [limit [current-point :as chain] points]
   {:pre [(list? chain)]}
   (if (= limit current-point)
     chain
     (let [[next-point & rest]
-          (sort-map (partial sort-by-angle (point-up-to-down current-point)) point-up-to-down points)
+          (sort-by-angle current-point points)
           rest (remove (complement (partial is-lower next-point)) rest)]
       (recur limit (conj chain  next-point) rest))))
 
@@ -145,8 +145,14 @@
   returns points to build a poligon"
   ([points]
    (let [[extra :as points] (sort point-by-line-comparator points)
-         right-chain (jarvis-right-chain ((last points) 1) (list extra) points)
-         chain (jarvis-left-chain extra right-chain points)]
+         the-most-up (last points)
+         [the-most-up]
+         (sort-by first (filter (fn [[x y]] (= y (the-most-up 1))) points))
+         [to-right-chain to-left-chain]
+         (split-after (complement #{the-most-up})
+                      (sort-by-angle extra points))
+         right-chain (jarvis-right-chain the-most-up (list extra) to-right-chain)
+         chain (jarvis-left-chain extra right-chain (conj to-left-chain extra))]
      chain)))
 
 (defn jarvis-poligon
