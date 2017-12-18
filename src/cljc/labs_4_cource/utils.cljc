@@ -20,7 +20,6 @@
         (assert true (str "Unnexpected collection type " (type col)))))
 
 (defn poligon-edges
-
   [points]
   (partition 2 1 points points))
 

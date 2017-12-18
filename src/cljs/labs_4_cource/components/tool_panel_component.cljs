@@ -3,6 +3,9 @@
             [labs-4-cource.components.carcas-control-component
              :refer
              [carcas-control-component]]
+            [labs-4-cource.components.fill-poligons-component
+             :refer
+             [fill-poligon-component]]
             [labs-4-cource.components.poligon-component :refer [poligon-component]]
             [labs-4-cource.components.scale-component :refer [scale-component]]
             [labs-4-cource.components.toogles :refer [toggles]]
@@ -16,4 +19,5 @@
    [scale-component @scale (partial reset! scale)]
    (cond (= :carcas @selected)  [carcas-control-component]
          (= :poligon @selected) [poligon-component]
-         :else                  [sun-lines-component])])
+         :else                  [sun-lines-component])
+   [fill-poligon-component]])

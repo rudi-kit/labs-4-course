@@ -1,9 +1,9 @@
 (ns labs-4-cource.debuging
-  (:require [labs-4-cource.canvas
+  (:require [clojure.data :refer [diff]]
+            [labs-4-cource.canvas
              :refer
              [clean-canvas! draw-pixels! swap-hidden-to-visible!]]
             [labs-4-cource.first-order-lines :refer [line-points]]
-            [labs-4-cource.poligons]
             [labs-4-cource.storage
              :refer
              [add-primitives
@@ -17,6 +17,8 @@
               remove-debug-line!
               selected]]
             [taoensso.timbre :as timbre :refer-macros [spy]]))
+
+(def line-points-cached (memoize line-points))
 
 (defn save-debug-line! []
   (when-not (nil? (:line @not-full-line))
@@ -32,7 +34,7 @@
 
 (defn add-line-to-debug! [line]
   (save-debug-line!)
-  (reset! not-full-line {:line line :rest-points (line-points line)}))
+  (reset! not-full-line {:line line :rest-points (line-points-cached line)}))
 
 (defn add-line-from-pos []
   (when (spy :info (= (count @new-points) 2))
@@ -55,13 +57,21 @@
 (derive :spline ::line)
 (derive :poligon ::line)
 
-(defmethod get-line [:wu    :not] [line]  (line-points line))
-(defmethod get-line :default [line]  (map (fn [[x y]] [x y 1]) (line-points line)))
+(defmethod get-line [:wu    :not] [line]  (line-points-cached line))
+(defmethod get-line :default [line]  (map (fn [[x y]] [x y 1]) (line-points-cached line)))
+
+(def prev-perm-content (atom []))
 
 (defn draw-permanent-content [{:keys [hidden visible] :as drawer} lines]
-  (clean-canvas! hidden)
-  (draw-pixels! hidden
-                (mapcat get-line lines)))
+  (let [[old new both] (diff @prev-perm-content lines)
+        to-draw (remove (into #{} both) lines)]
+    (reset! prev-perm-content lines)
+    (draw-pixels! hidden
+                  (mapcat get-line to-draw))))
+
+(defn reset-primitives! []
+  (reset! primitives nil)
+  (reset! prev-perm-content nil))
 
 (defn draw-temporaly-content [{:keys [extra visible] :as drawer} lines]
   (clean-canvas! extra)
@@ -71,11 +81,9 @@
 (defn draw-canvas-contents!
   "set flags to redraw content"
   [permanent-change temporary]
-  (pr permanent-change temporary)
   (swap! drawer assoc
          :perm-changed (not-empty permanent-change)
-         :temp-changed (not-empty temporary))
-  (pr (:perm-changed @drawer) (:temp-changed @drawer)))
+         :temp-changed (not-empty temporary)))
 
 (defn draw-visible-content
   "redraw content in optimal way using flags"
@@ -83,10 +91,8 @@
   {:pre [(not (nil? visible))]}
   (when (or temp-changed perm-changed)
     (when perm-changed
-      (pr "hidden")
       (draw-permanent-content drawer @primitives))
     (when temp-changed
-      (pr "temp")
       (draw-temporaly-content drawer @new-primitives))
     (clean-canvas! visible)
 

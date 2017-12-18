@@ -1,20 +1,20 @@
 (ns labs-4-cource.components.canvas-component
   (:require [labs-4-cource.canvas :as can :refer [clean! toggle-smoothing!]]
+            [labs-4-cource.debuging :refer [reset-primitives!]]
             [labs-4-cource.event-handlers
              :refer
-             [on-click! on-mouse-move! registrate-event-handlers]]
-            [labs-4-cource.storage :refer [drawer height primitives width]]
+             [on-click! on-mouse-move! on-right-click! registrate-event-handlers]]
+            [labs-4-cource.storage :refer [drawer height width]]
             [labs-4-cource.updaters :refer [registrate-storage-handlers]]
             [reagent.core :as reagent]
-            [taoensso.timbre :as log :refer [spy]]
-            [labs-4-cource.event-handlers :refer [on-right-click!]]))
+            [taoensso.timbre :as log :refer [spy]]))
 
 (defn clean-canvas!
   "event handler of button clean canvas"
   []
   (spy :info "clean-canvas")
   (clean! @drawer)
-  (reset! primitives nil))
+  (reset-primitives!))
 
 (defn div-with-canvas []
   (reagent/create-class

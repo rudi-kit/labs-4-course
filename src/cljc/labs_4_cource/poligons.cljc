@@ -2,7 +2,7 @@
   #?(:clj (:gen-class))
   (:require [labs-4-cource.aproximation :refer [linearise]]
             [labs-4-cource.first-order-lines :refer [line-points]]
-            [labs-4-cource.math-helpers :refer [sign]]
+            [labs-4-cource.math-helpers :refer [round round-vec sign]]
             [labs-4-cource.utils :refer [get-min-max-coordinates poligon-edges]]))
 
 (defn ->Poligon [points]
@@ -36,10 +36,7 @@
   (Math/atan2 (- y2 y1) (- x2 x1)))
 
 (defn polar-angle [p1 p2]
-  (let [angle (calc-polar-angle p1 p2)]
-    (if (< angle 0)
-      (+ (* 2 Math/PI) angle)
-      angle)))
+  (calc-polar-angle p1 p2))
 
 (defn calc-polar-angle* [point points]
   (map polar-angle (repeat point) points))
@@ -107,8 +104,6 @@
         sorted (sort-by-angle extra-point points)]
     (->Poligon (grehem-shell (into [extra-point] sorted)))))
 
-(grehem-poligon poligon1)
-
 (defmethod line-points :poligon [{points :points}]
   (linearise (concat points [(first points)])))
 
@@ -129,6 +124,7 @@
     chain
     (let [[next-point & rest] (sort-by-angle current-point points)
           rest (remove (partial is-lower next-point) rest)]
+      (println limit current-point next-point chain points)
       (recur limit (conj chain  next-point) rest))))
 
 (defn jarvis-left-chain [limit [current-point :as chain] points]
@@ -138,6 +134,7 @@
     (let [[next-point & rest]
           (sort-by-angle current-point points)
           rest (remove (complement (partial is-lower next-point)) rest)]
+      (println limit current-point next-point chain points)
       (recur limit (conj chain  next-point) rest))))
 
 (defn jarvis-shell
@@ -216,23 +213,32 @@
   [x1 x2 y]
   [[x1 y] [x2 y]])
 
-(defn point-by-line-comparator [p1 p2]
-  (compare (vec (reverse p1)) (vec (reverse p2))))
+(defn line-tan [[[x1 y1] [x2 y2]]]
+  (/ (- x2 x1) (- y2 y1)))
+
+(defn get-cross-points1 [y lines]
+  (let [tans (map line-tan lines)
+        cross-points
+        (map (comp
+              round-vec
+              (fn [[[x1 y1]] tan] [(+ (* (- y y1) tan) x1) y]))
+             lines tans)]
+    (filter* line-point?
+             cross-points
+             lines)))
 
 (defn fill-poligon-with-sorter-edges
   [points]
-  (let [x-es (sort (map first points))
-        y-es (sort (map second points))
-        minx (first x-es)
-        maxx (first (reverse x-es))
-        miny (first y-es)
-        maxy (first (reverse y-es))
-        edges (poligon-edges points)]
+  (let [edges (poligon-edges points)
+        points (sort-by second points)
+        miny (round (second (first points)))
+        maxy (round (second (last points)))]
     (partition
      2
      (sort point-by-line-comparator
-           (mapcat
-            get-cross-points
-            (map (partial horizont-line minx maxx)
-                 (range miny (inc maxy)))
-            (repeat points))))))
+           (concat
+            (mapcat
+             get-cross-points1
+             (range miny (inc maxy))
+             (repeat edges))
+            (drop 1 (drop-last points)))))))

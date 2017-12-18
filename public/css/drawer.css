@@ -6,7 +6,7 @@
 .tool-panel {
     display: flex;
     flex-direction: column;
+    width: 300px;
 }
 
-.draw-area {
-}
+.draw-area {}

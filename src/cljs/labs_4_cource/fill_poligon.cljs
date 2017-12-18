@@ -23,7 +23,7 @@
 
 (defn fill-raster-poligon
   "use depth-first algo to fill poligon"
-    [data width color [[x y :as p] & tail]]
+  [data width color [[x y :as p] & tail]]
   (when-not (nil? p)
     (if (not= color (get-pixel data p width))
       (do
@@ -32,15 +32,8 @@
                (concat [[(inc x) y]
                         [(dec x) y]
                         [x (inc y)]
-                        [x (dec y)]
-                        ] tail)))
+                        [x (dec y)]] tail)))
       (recur data width color tail))))
-
-(let [x 0 y 0 tail '()]
-  (if true
-    (concat [[(inc x) y] [(dec x) y] [x (dec y)] [x (inc y)]] tail)
-    tail))
-(comment (fill-poligon (:visible @drawer) [1 4] [0 0 0 255]))
 
 (defn fill-poligon [canvas point color]
   (let [ctx (get-ctx canvas)
@@ -49,14 +42,30 @@
     (fill-raster-poligon data @width color [point])
     (.putImageData ctx data-image 0 0)))
 
-(comment (fill-poligon (:visible @drawer) [200 200] [0 0 0 255]))
+(defn fill-raster-poligon-with-delay
+  "use depth-first algo to fill poligon"
+  [data width color [[x y :as p] & tail :as points]]
+  (when-not (empty? points)
+    (if (not= color (get-pixel data p width))
+      (do
+        (set-pixel data p color width)
+        (partial fill-raster-poligon-with-delay data width color
+                 (concat [[(inc x) y]
+                          [(dec x) y]
+                          [x (inc y)]
+                          [x (dec y)]] tail)))
+      (partial fill-raster-poligon-with-delay data width color tail))))
 
-(let [ctx (get-ctx (:visible @drawer))
-      data-image (.getImageData ctx 0 0 @width @height)
-      data (.-data data-image)]
-  (get-pixel data [0 1] @width))
-
-(reset! primitives [(->Poligon [[0 1] [160 100] [0 160] [0 50]])])
-
-(line-points (->Poligon [[50 100] [160 100] [0 160] [0 50]]))
-
+(defn fill-poligon-with-delay
+  ([canvas point color]
+   (let [ctx (get-ctx canvas)
+         data-image (.getImageData ctx 0 0 @width @height)
+         data (.-data data-image)
+         f' (fill-raster-poligon-with-delay data @width color [point])]
+     (.putImageData ctx data-image 0 0)
+     (partial fill-poligon-with-delay canvas ctx data-image data f')))
+  ([canvas ctx data-image data f]
+   (when-not (nil? f)
+     (let [f' (f)]
+       (.putImageData ctx data-image 0 0)
+       (partial fill-poligon-with-delay canvas ctx data-image data f')))))
