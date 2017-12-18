@@ -1,12 +1,11 @@
 (ns labs-4-cource.poligons
-  #?(:clj (:gen-class))
   (:require [labs-4-cource.aproximation :refer [linearise]]
             [labs-4-cource.first-order-lines :refer [line-points]]
             [labs-4-cource.math-helpers :refer [round round-vec sign]]
             [labs-4-cource.utils :refer [get-min-max-coordinates poligon-edges]]))
 
 (defn ->Poligon [points]
-  {:type :poligon :points points})
+  {:type :poligon :points (mapv round-vec points)})
 
 (defn determ-2 [[[x1 y1]
                  [x2 y2] :as points]]

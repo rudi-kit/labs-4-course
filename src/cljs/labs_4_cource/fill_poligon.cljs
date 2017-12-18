@@ -21,18 +21,28 @@
      (aget data (+ idx 2))
      (aget data (+ idx 3))]))
 
+(defn not-empty-pixel [data [x y :as p] color width]
+  (if (and (>= x 0) (>= y 0) (not= color (get-pixel data p width)))
+    p
+    nil))
+
+(defn empty-neigbour-pixels [data [x y] color width]
+  (filter identity
+          [(not-empty-pixel data [(inc x) y] color width)
+           (not-empty-pixel data [(dec x) y] color width)
+           (not-empty-pixel data [x (inc y)] color width)
+           (not-empty-pixel data [x (dec y)] color width)]))
+
 (defn fill-raster-poligon
   "use depth-first algo to fill poligon"
   [data width color [[x y :as p] & tail]]
+  (pr p tail (get-pixel data p width))
   (when-not (nil? p)
     (if (not= color (get-pixel data p width))
       (do
         (set-pixel data p color width)
         (recur data width color
-               (concat [[(inc x) y]
-                        [(dec x) y]
-                        [x (inc y)]
-                        [x (dec y)]] tail)))
+               (concat (empty-neigbour-pixels data p color width)  tail)))
       (recur data width color tail))))
 
 (defn fill-poligon [canvas point color]
@@ -42,6 +52,12 @@
     (fill-raster-poligon data @width color [point])
     (.putImageData ctx data-image 0 0)))
 
+(comment (reset! labs-4-cource.storage/primitives
+         [{:type :poligon :points [[1 2] [1 11] [7 11] [7 1] [5 7]]}
+          ])
+
+         (fill-poligon (:visible @labs-4-cource.storage/drawer) [4 8] [0 0 0 255]))
+
 (defn fill-raster-poligon-with-delay
   "use depth-first algo to fill poligon"
   [data width color [[x y :as p] & tail :as points]]
@@ -50,10 +66,7 @@
       (do
         (set-pixel data p color width)
         (partial fill-raster-poligon-with-delay data width color
-                 (concat [[(inc x) y]
-                          [(dec x) y]
-                          [x (inc y)]
-                          [x (dec y)]] tail)))
+                 (concat (empty-neigbour-pixels data p color width) tail)))
       (partial fill-raster-poligon-with-delay data width color tail))))
 
 (defn fill-poligon-with-delay
