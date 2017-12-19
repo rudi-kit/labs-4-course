@@ -1,16 +1,17 @@
 (ns labs-4-cource.components.tool-panel-component
-  (:require [labs-4-cource.components.canvas-component :refer [clean-canvas!]]
-            [labs-4-cource.components.carcas-control-component
-             :refer
-             [carcas-control-component]]
-            [labs-4-cource.components.fill-poligons-component
-             :refer
-             [fill-poligon-component]]
-            [labs-4-cource.components.poligon-component :refer [poligon-component]]
-            [labs-4-cource.components.scale-component :refer [scale-component]]
-            [labs-4-cource.components.toogles :refer [toggles]]
-            [labs-4-cource.line-examples :refer [sun-lines-component]]
-            [labs-4-cource.storage :refer [drawer scale selected]]))
+    (:require [labs-4-cource.components.canvas-component :refer [clean-canvas!]]
+              [labs-4-cource.components.carcas-control-component
+               :refer
+               [carcas-control-component]]
+              [labs-4-cource.components.fill-poligons-component
+               :refer
+               [fill-poligon-component]]
+              [labs-4-cource.components.poligon-component :refer [poligon-component]]
+              [labs-4-cource.components.scale-component :refer [scale-component]]
+              [labs-4-cource.components.toogles :refer [toggles]]
+              [labs-4-cource.line-examples :refer [sun-lines-component]]
+              [labs-4-cource.storage :refer [drawer scale selected]]
+              [labs-4-cource.components.amputate-component :refer [amputate-component]]))
 
 (defn tool-panel []
   [:div.tool-panel
@@ -20,4 +21,5 @@
    (cond (= :carcas @selected)  [carcas-control-component]
          (= :poligon @selected) [poligon-component]
          :else                  [sun-lines-component])
-   [fill-poligon-component]])
+   [fill-poligon-component]
+   [amputate-component]])
