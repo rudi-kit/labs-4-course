@@ -1,6 +1,7 @@
 (ns labs-4-cource.amputation
-  #?(:clj (:gen-class))
-  (:require [labs-4-cource.utils :refer [get-min-max-coordinates]]))
+  (:require [labs-4-cource.poligons :refer [edge-vector find-normals]]
+            [labs-4-cource.utils :refer [get-min-max-coordinates poligon-edges]]
+            [labs-4-cource.poligons :refer [scalar-mult]]))
 
 (defn four-bits-code
   "get 4-bits code for point
@@ -94,3 +95,53 @@
                      :non-visible non-visible}]
                    splits))))
 
+(defn cross-point-kb [[P1 :as line] [:as F] norm]
+  (let [D (edge-vector line)
+        W (edge-vector [F P1])
+        WN (scalar-mult [W norm])
+        DN (scalar-mult [D norm])]
+    (if (= 0 DN)
+      []
+      [(- (/ WN DN)) WN (+ WN DN) DN])))
+
+(defn param-line-point [[[x1 y1] [x2 y2] :as line]]
+  (fn [t]
+    [(+ x1 (* t (- x2 x1)))
+     (+ y1 (* t (- y2 y1)))]))
+
+(defn amputate-kb [lines poligon]
+  (let [norm-edges (zipmap (find-normals poligon)
+                           (poligon-edges poligon))]
+    (for [[P1 P2 :as line] lines]
+      (let [attrs
+            (filter
+             (comp identity first)
+             (for [[n [F1 :as e]] norm-edges]
+               (cross-point-kb line F1 n)))]
+        (cond (every?
+               (fn [[t wn wn+dn dn]] (and (or (< t 0) (> t 1)) (< wn 0) (< wn+dn 0)))
+               attrs)
+              []
+              (every?
+               (fn [[t wn wn+dn dn]] (and (or (< t 0) (> t 1)) (> wn 0) (> wn+dn 0)))
+               attrs)
+              [line]
+              :else
+              (let [up-downs
+                    (reduce
+                     (fn [up-downs [t wn wn+dn dn]]
+                       (if (> dn 0)
+                         (update up-downs :down concat [t])
+                         (update up-downs :up concat [t])))
+                     {}
+                     attrs)
+                    up (first (sort (:up up-downs)))
+                    down (last (sort (:down up-downs)))
+                    up (if (> up 1) 1 up)
+                    down (if (< down 0) 0 down)]
+                (mapv (param-line-point line) [up down])))))))
+
+(comment (amputate-kb [[[4 1] [7 12]] [[5 5] [9 7]]] [[3 6] [5 10] [9 4] [7 2]])
+         (cross-point-kb [[4 1] [7 12]] [9 4] [-2 2]))
+
+(amputate-kb [ [[1 1] [9 1]]] [[3 6] [5 10] [9 4] [7 2]])

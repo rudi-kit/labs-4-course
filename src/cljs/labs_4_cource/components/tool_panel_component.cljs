@@ -22,4 +22,5 @@
          (= :poligon @selected) [poligon-component]
          :else                  [sun-lines-component])
    [fill-poligon-component]
-   [amputate-component]])
+   ])
+(comment [amputate-component])
