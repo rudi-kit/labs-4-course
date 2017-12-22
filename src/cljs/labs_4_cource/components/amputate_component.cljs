@@ -77,15 +77,16 @@
     {:on-click amputate-via-kb}
     "Kirus back"]])
 
+
 (def qube (update {:type :carcas
             :points [[100 100 300]
                      [300 100 300]
-                     [300 300 300]
+                     [300 100 100]
+                     [100 100 100]
                      [100 300 300]
-                     [100 100 400]
-                     [300 100 400]
-                     [300 300 400]
-                     [100 300 400]]
+                     [300 300 300]
+                     [300 300 100]
+                     [100 300 100]]
             :lines [[0 1]
                     [0 3]
                     [1 2]
@@ -105,12 +106,13 @@
                     [1 2 6 5]
                     [2 3 7 6]]}
                   :points
-                  rotate [45 45 0]))
+                  rotate [45 45 45]))
+
 
 (comment (reset! primitives [qube])
          (reset! primitives (map ->Poligon
                                  (remove-invisible qube
-                                                   [0 0 -1 1]))))
+                                                   [0 0 1]))))
 
 (comment(first @primitives)
         (reset! primitives [{:type :poligon,

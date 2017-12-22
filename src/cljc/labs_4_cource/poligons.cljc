@@ -5,7 +5,7 @@
             [labs-4-cource.utils :refer [get-min-max-coordinates poligon-edges]]))
 
 (defn ->Poligon [points]
-  {:type :poligon :points (mapv round-vec points)})
+  {:type :poligon :points (mapv (fn [[x y]] [x y]) (mapv round-vec points))})
 
 (defn determ-2 [[[x1 y1]
                  [x2 y2] :as points]]
